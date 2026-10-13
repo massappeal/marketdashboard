@@ -61,6 +61,12 @@ MACRO = {
     "^IRX": "2-Yr Yield",
 }
 
+# Advance Decline
+ADVANCE_DECLINE = {
+    "ADD": "NYSE Advance-Decline",
+    "ADDQ": "Nasdaq Advance-Decline",
+}
+
 # T2108 proxy — % of S&P 500 stocks above 50-day MA (StockCharts symbol)
 # Note: Yahoo Finance may not have this exact symbol; we try multiple variants
 T2108_PROXIES = ["^SPXA50R", "$SPXA50R", "SPXA50R"]
@@ -78,7 +84,7 @@ OFFENSE_TICKERS = ["XLK", "SMH", "IGV"]
 DEFENSE_TICKERS = ["XLU", "XLP", "XLV"]
 
 # All tickers to fetch
-ALL_TICKERS = {**INDEXES, **SECTORS, **THEMATIC, **MACRO, **CRYPTO}
+ALL_TICKERS = {**INDEXES, **SECTORS, **THEMATIC, **MACRO, **CRYPTO, **ADVANCE_DECLINE}
 
 # Sector colors (borrowed from traderwillhu)
 SECTOR_COLORS = {
@@ -409,6 +415,7 @@ def main():
         "sectors": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in SECTORS.items() if t in all_metrics],
         "thematic": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in THEMATIC.items() if t in all_metrics],
         "macro": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in MACRO.items() if t in all_metrics],
+        "advance_decline": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in ADVANCE_DECLINE.items() if t in all_metrics],
         "crypto": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in CRYPTO.items() if t in all_metrics],
         "t2108_proxy": t2108_proxy,
     }
