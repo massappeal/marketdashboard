@@ -8,7 +8,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0f172a;
+            background: #0a0e1a;
             color: #e2e8f0;
             font-size: 12px;
             line-height: 1.4;
@@ -17,7 +17,7 @@
         /* Header */
         .header {
             background: #1e3a5f;
-            padding: 10px 16px;
+            padding: 10px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -30,37 +30,39 @@
         .header-proverb { font-size: 11px; color: #cbd5e1; font-style: italic; }
         .header-source { font-size: 10px; color: #64748b; }
 
-        /* Main layout */
+        /* Main layout — wider, uses full screen */
         .main {
             display: grid;
-            grid-template-columns: 380px 1fr;
-            gap: 12px;
-            padding: 12px;
+            grid-template-columns: 400px 1fr;
+            gap: 16px;
+            padding: 16px 24px;
+            max-width: 100%;
         }
 
         /* Section styling */
         .section {
-            background: #1e293b;
-            border-radius: 6px;
-            margin-bottom: 10px;
+            background: #111827;
+            border-radius: 8px;
+            margin-bottom: 12px;
             overflow: hidden;
+            border: 1px solid #1e293b;
         }
         .section-header {
-            background: #334155;
-            padding: 6px 10px;
+            background: #1e293b;
+            padding: 8px 12px;
             font-size: 11px;
             font-weight: 700;
             color: #60a5fa;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .section-body { padding: 8px 10px; }
+        .section-body { padding: 10px 12px; }
 
         /* Market Trend */
         .trend-row {
             display: flex;
             justify-content: space-between;
-            padding: 3px 0;
+            padding: 4px 0;
             border-bottom: 1px solid #334155;
             font-size: 11px;
         }
@@ -69,15 +71,15 @@
         .trend-no { color: #f87171; font-weight: 700; }
         .regime-box {
             text-align: center;
-            padding: 8px;
-            margin-top: 6px;
+            padding: 10px;
+            margin-top: 8px;
             border-top: 1px solid #334155;
         }
         .regime-label { font-size: 10px; color: #94a3b8; }
         .regime-value {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 800;
-            margin: 2px 0;
+            margin: 4px 0;
         }
         .regime-green { color: #4ade80; }
         .regime-yellow { color: #fbbf24; }
@@ -91,14 +93,14 @@
         .commentary-text {
             font-size: 11px;
             color: #cbd5e1;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         /* Themes */
         .theme-row {
             display: flex;
             justify-content: space-between;
-            padding: 2px 0;
+            padding: 3px 0;
             font-size: 10px;
             border-bottom: 1px solid #334155;
         }
@@ -112,13 +114,13 @@
         .gainers-table { width: 100%; font-size: 10px; border-collapse: collapse; }
         .gainers-table th {
             text-align: left;
-            padding: 3px 4px;
+            padding: 4px 6px;
             background: #334155;
             color: #94a3b8;
             font-weight: 600;
         }
         .gainers-table td {
-            padding: 3px 4px;
+            padding: 4px 6px;
             border-bottom: 1px solid #334155;
         }
         .gainers-table tr:last-child td { border-bottom: none; }
@@ -127,16 +129,16 @@
         .breadth-stat {
             display: flex;
             justify-content: space-between;
-            padding: 3px 0;
+            padding: 4px 0;
             font-size: 11px;
         }
         .breadth-input {
             background: #0f172a;
             border: 1px solid #475569;
             color: #e2e8f0;
-            padding: 2px 6px;
-            border-radius: 3px;
-            width: 60px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            width: 70px;
             font-size: 11px;
             text-align: right;
         }
@@ -157,25 +159,38 @@
         .data-table thead th {
             background: #1e3a5f;
             color: #94a3b8;
-            padding: 5px 6px;
+            padding: 6px 8px;
             text-align: right;
             font-weight: 600;
             border-bottom: 1px solid #334155;
+            white-space: nowrap;
         }
         .data-table thead th:first-child {
             text-align: left;
         }
         .data-table tbody td {
-            padding: 4px 6px;
-            border-bottom: 1px solid #334155;
+            padding: 5px 8px;
+            border-bottom: 1px solid #1e293b;
             text-align: right;
+            white-space: nowrap;
         }
         .data-table tbody td:first-child {
             text-align: left;
             font-weight: 600;
         }
         .data-table tbody tr:hover {
-            background: #334155;
+            background: #1e293b;
+        }
+
+        /* Clickable ticker links */
+        .ticker-link {
+            color: #60a5fa;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .ticker-link:hover {
+            color: #93c5fd;
+            text-decoration: underline;
         }
 
         /* Color coding */
@@ -197,7 +212,7 @@
             position: absolute;
             top: 0;
             height: 100%;
-            opacity: 0.15;
+            opacity: 0.12;
             border-radius: 2px;
             z-index: 0;
         }
@@ -219,7 +234,7 @@
         /* Footer */
         .footer {
             text-align: center;
-            padding: 8px;
+            padding: 10px;
             font-size: 9px;
             color: #475569;
             border-top: 1px solid #1e293b;
@@ -227,8 +242,21 @@
 
         /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-track { background: #0a0e1a; }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+
+        /* Two-column right section for wider screens */
+        .right-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .right-grid .section {
+            margin-bottom: 0;
+        }
+        .right-grid-full {
+            grid-column: 1 / -1;
+        }
     </style>
 </head>
 <body>
@@ -248,7 +276,7 @@
     </div>
 
     <div class="footer">
-        Data sourced from Yahoo Finance · EMA/SMA calculations use closing prices · Not financial advice
+        Data sourced from Yahoo Finance · Click any ticker to open TradingView chart · Not financial advice
     </div>
 
 <script>
@@ -272,6 +300,17 @@
         if (!m.above_ema20 && !m.above_sma50) return '<span class="below-both">Below Both</span>';
         if (m.above_ema20 && !m.above_sma50) return '<span class="mixed-trend">Above 20 / Below 50</span>';
         return '<span class="mixed-trend">Below 20 / Above 50</span>';
+    }
+
+    function tvLink(ticker, label) {
+        // Clean ticker for TradingView URL
+        let tvTicker = ticker;
+        if (ticker.startsWith('^')) tvTicker = ticker.substring(1);
+        if (ticker === 'BTC-USD') tvTicker = 'BTCUSD';
+        if (ticker === 'ETH-USD') tvTicker = 'ETHUSD';
+        if (ticker === 'SOL-USD') tvTicker = 'SOLUSD';
+        if (ticker === 'ZEC-USD') tvTicker = 'ZECUSD';
+        return `<a href="https://www.tradingview.com/chart/?symbol=${tvTicker}" target="_blank" class="ticker-link" title="Open ${ticker} on TradingView">${label}</a>`;
     }
 
     function barWidth(v, minVal, maxVal) {
@@ -324,7 +363,7 @@
                 <tbody>
                     ${gainers.map(g => `
                         <tr>
-                            <td><strong>${g.ticker}</strong></td>
+                            <td>${tvLink(g.ticker, g.ticker)}</td>
                             <td>${g.name}</td>
                             <td class="${pctColor(g.daily)}">${fmtPct(g.daily)}</td>
                         </tr>
@@ -334,8 +373,7 @@
         `;
     }
 
-    function renderDataTable(rows, cols, groupName) {
-        // Compute column ranges for bar viz
+    function renderDataTable(rows, cols) {
         const ranges = {};
         cols.forEach(col => {
             const vals = rows.map(r => r[col.key]).filter(v => v !== null && v !== undefined);
@@ -357,7 +395,7 @@
                 <tbody>
                     ${rows.map(r => `
                         <tr>
-                            <td>${r.ticker}: ${r.name}</td>
+                            <td>${tvLink(r.ticker, r.ticker + ': ' + r.name)}</td>
                             ${cols.map(c => `<td>${renderBar(r[c.key], ranges[c.key])}</td>`).join('')}
                             <td>${trendText(r)}</td>
                         </tr>
@@ -377,8 +415,8 @@
         const sectors = snapshot.sectors || [];
         const thematic = snapshot.thematic || [];
         const macro = snapshot.macro || [];
+        const crypto = snapshot.crypto || [];
 
-        // Build offense/defense theme text
         const offSpread = regime.offense_vs_defense || 0;
         const offText = offSpread > 0 ? 
             `<span class="theme-leader">Offense leading (+${offSpread.toFixed(2)}%)</span>` : 
@@ -387,7 +425,7 @@
         document.getElementById('header-date').textContent = snapshot.market_date || '';
 
         const html = `
-        <div style="display:grid;grid-template-columns:380px 1fr;gap:12px;">
+        <div style="display:grid;grid-template-columns:400px 1fr;gap:16px;">
 
             <!-- LEFT COLUMN -->
             <div>
@@ -430,7 +468,7 @@
                             <span class="theme-value">Tech + AI infra focus</span>
                         </div>
                         <div style="margin-top:6px;font-size:10px;color:#94a3b8;">
-                            <strong>Focus Themes:</strong> Software M&A, AI Infrastructure, Energy/Oil, Bond Yields, Healthcare, Brazil/LatAm
+                            <strong>Focus Themes:</strong> Software M&A, AI Infrastructure, Energy/Oil, Bond Yields, Healthcare, Brazil/LatAm, Crypto
                         </div>
                         <div style="margin-top:8px;">
                             <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;"><strong>Top gainers today:</strong></div>
@@ -449,22 +487,56 @@
                         </div>
                         <div class="breadth-stat">
                             <span>New 52-wk highs (% of issues)</span>
-                            <span><input type="number" class="breadth-input" id="new-highs" value="85" onchange="updateBreadth()"> (1.8%)</span>
+                            <span><input type="number" class="breadth-input" id="new-highs" value="" placeholder="0" onchange="updateBreadth()"> (paste from TV)</span>
                         </div>
                         <div class="breadth-stat">
                             <span>New 52-wk lows (% of issues)</span>
-                            <span><input type="number" class="breadth-input" id="new-lows" value="306" onchange="updateBreadth()"> (6.4%)</span>
+                            <span><input type="number" class="breadth-input" id="new-lows" value="" placeholder="0" onchange="updateBreadth()"> (paste from TV)</span>
                         </div>
                         <div class="breadth-stat">
                             <span>Net NH-NL / NH-NL ratio</span>
-                            <span id="nh-nl-net" class="neg">-221 · 0.28</span>
+                            <span id="nh-nl-net" class="neg">--</span>
                         </div>
                         <div class="breadth-stat">
                             <span>New highs outnumber new lows?</span>
-                            <span id="nh-nl-winner" class="trend-no">NO</span>
+                            <span id="nh-nl-winner" class="trend-no">--</span>
                         </div>
                         <div style="margin-top:6px;font-size:9px;color:#64748b;">
                             Universe: ~4,700 issues · Paste your TradingView numbers above
+                        </div>
+                    </div>
+                </div>
+
+                <!-- T2108 / Market Breadth -->
+                <div class="section">
+                    <div class="section-header">T2108 / % Stocks Above 40-Day SMA</div>
+                    <div class="section-body">
+                        <div style="font-size:10px;color:#94a3b8;margin-bottom:6px;">
+                            <strong>Automated Proxy ($SPXA50R):</strong>
+                            <span id="t2108-proxy-value" style="color:#cbd5e1;">--</span>
+                            <span style="font-size:9px;color:#64748b;"> (S&P 500 % above 50-day MA)</span>
+                        </div>
+                        <div style="border-top:1px solid #334155;margin:6px 0;padding-top:6px;">
+                            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;"><strong>Manual T2108 Calculator:</strong></div>
+                            <div class="breadth-stat">
+                                <span>A: Stocks above 40DSMA</span>
+                                <span><input type="number" class="breadth-input" id="t2108-a" value="" placeholder="0" onchange="updateT2108()"></span>
+                            </div>
+                            <div class="breadth-stat">
+                                <span>B: Stocks below 40DSMA</span>
+                                <span><input type="number" class="breadth-input" id="t2108-b" value="" placeholder="0" onchange="updateT2108()"></span>
+                            </div>
+                            <div class="breadth-stat" style="margin-top:4px;">
+                                <span><strong>T2108 = A / (A+B) × 100</strong></span>
+                                <span id="t2108-result" style="font-size:14px;font-weight:700;color:#94a3b8;">--</span>
+                            </div>
+                            <div class="breadth-stat">
+                                <span>Condition</span>
+                                <span id="t2108-condition" style="font-size:10px;font-weight:600;">--</span>
+                            </div>
+                            <div style="margin-top:4px;font-size:9px;color:#64748b;">
+                                Levels: &lt;20% = Oversold · 20-70% = Neutral · &gt;70% = Overbought
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -476,16 +548,16 @@
                         <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">Upcoming macro data (next 7 days):</div>
                         <div style="font-size:10px;color:#cbd5e1;line-height:1.6;" id="econ-calendar">
                             <div style="padding:2px 0;border-bottom:1px solid #334155;">
-                                <span style="color:#fbbf24;">Mon Oct 12</span> · No major events
+                                <span style="color:#fbbf24;">Mon Oct 13</span> · No major events
                             </div>
                             <div style="padding:2px 0;border-bottom:1px solid #334155;">
-                                <span style="color:#fbbf24;">Tue Oct 13</span> · PPI, NFIB Small Business
+                                <span style="color:#fbbf24;">Tue Oct 14</span> · PPI, NFIB Small Business
                             </div>
                             <div style="padding:2px 0;border-bottom:1px solid #334155;">
-                                <span style="color:#fbbf24;">Wed Oct 14</span> · CPI, FOMC Minutes
+                                <span style="color:#fbbf24;">Wed Oct 15</span> · CPI, FOMC Minutes
                             </div>
                             <div style="padding:2px 0;">
-                                <span style="color:#fbbf24;">Thu Oct 15</span> · Jobless Claims, Retail Sales
+                                <span style="color:#fbbf24;">Thu Oct 16</span> · Jobless Claims, Retail Sales
                             </div>
                         </div>
                         <div style="margin-top:6px;font-size:9px;color:#64748b;">
@@ -518,11 +590,11 @@
 
             </div>
 
-            <!-- RIGHT COLUMN -->
-            <div>
+            <!-- RIGHT COLUMN — wider, two-column grid inside -->
+            <div class="right-grid">
 
                 <!-- Major Indexes -->
-                <div class="section">
+                <div class="section right-grid-full">
                     <div class="section-header">Major Indexes</div>
                     <div class="section-body" style="padding:0;">
                         ${renderDataTable(
@@ -532,35 +604,47 @@
                                 {key: 'p5d', label: '% 5D'},
                                 {key: 'off_high', label: '% Off 52-Wk High'},
                                 {key: 'ytd', label: '% YTD'},
-                            ],
-                            'indexes'
+                            ]
                         )}
                     </div>
                 </div>
 
                 <!-- S&P 500 Sectors -->
                 <div class="section">
-                    <div class="section-header">S&P 500 Sectors (ranked by 5D)</div>
+                    <div class="section-header">S&P 500 Sectors (5D)</div>
                     <div class="section-body" style="padding:0;">
                         ${renderDataTable(sectors, [
                             {key: 'daily', label: '% Daily'},
                             {key: 'p5d', label: '% 5D'},
-                            {key: 'off_high', label: '% Off 52-Wk High'},
+                            {key: 'off_high', label: '% Off High'},
                             {key: 'ytd', label: '% YTD'},
-                        ], 'sectors')}
+                        ])}
                     </div>
                 </div>
 
                 <!-- Thematic ETFs -->
                 <div class="section">
-                    <div class="section-header">Industry & Thematic ETFs (ranked by 5D)</div>
+                    <div class="section-header">Thematic ETFs (5D)</div>
                     <div class="section-body" style="padding:0;">
                         ${renderDataTable(thematic, [
                             {key: 'daily', label: '% Daily'},
                             {key: 'p5d', label: '% 5D'},
-                            {key: 'off_high', label: '% Off 52-Wk High'},
+                            {key: 'off_high', label: '% Off High'},
                             {key: 'ytd', label: '% YTD'},
-                        ], 'thematic')}
+                        ])}
+                    </div>
+                </div>
+
+                <!-- Crypto -->
+                <div class="section">
+                    <div class="section-header">Crypto</div>
+                    <div class="section-body" style="padding:0;">
+                        ${renderDataTable(crypto, [
+                            {key: 'daily', label: '% Daily'},
+                            {key: 'p5d', label: '% 5D'},
+                            {key: 'off_high', label: '% Off High'},
+                            {key: 'ytd', label: '% YTD'},
+                        ])}
                     </div>
                 </div>
 
@@ -571,9 +655,9 @@
                         ${renderDataTable(macro, [
                             {key: 'daily', label: '% Daily'},
                             {key: 'p5d', label: '% 5D'},
-                            {key: 'off_high', label: '% Off 52-Wk High'},
+                            {key: 'off_high', label: '% Off High'},
                             {key: 'ytd', label: '% YTD'},
-                        ], 'macro')}
+                        ])}
                     </div>
                 </div>
 
@@ -583,8 +667,8 @@
 
         document.getElementById('main-content').innerHTML = html;
 
-        // Update dynamic fields
         updateBreadth();
+        updateT2108();
         updateEmotionalAnalysis();
     }
 
@@ -612,8 +696,55 @@
         }
     };
 
+    window.updateT2108 = function() {
+        const a = parseFloat(document.getElementById('t2108-a')?.value);
+        const b = parseFloat(document.getElementById('t2108-b')?.value);
+        const resultEl = document.getElementById('t2108-result');
+        const condEl = document.getElementById('t2108-condition');
+
+        if (isNaN(a) || isNaN(b) || (a + b) === 0) {
+            if (resultEl) resultEl.textContent = '--';
+            if (condEl) condEl.textContent = '--';
+            return;
+        }
+
+        const t2108 = (a / (a + b)) * 100;
+        const val = t2108.toFixed(1);
+
+        if (resultEl) {
+            resultEl.textContent = val + '%';
+            if (t2108 >= 70) resultEl.style.color = '#4ade80';  // high = bullish breadth
+            else if (t2108 <= 20) resultEl.style.color = '#f87171';  // low = bearish
+            else resultEl.style.color = '#fbbf24';
+        }
+
+        if (condEl) {
+            if (t2108 >= 70) {
+                condEl.textContent = 'OVERBOUGHT';
+                condEl.style.color = '#4ade80';
+            } else if (t2108 <= 20) {
+                condEl.textContent = 'OVERSOLD';
+                condEl.style.color = '#f87171';
+            } else {
+                condEl.textContent = 'NEUTRAL';
+                condEl.style.color = '#fbbf24';
+            }
+        }
+    };
+
     function updateEmotionalAnalysis() {
         if (!snapshot) return;
+
+        // T2108 proxy display
+        const proxyEl = document.getElementById('t2108-proxy-value');
+        if (proxyEl && snapshot.t2108_proxy) {
+            const p = snapshot.t2108_proxy;
+            const sign = p.daily >= 0 ? '+' : '';
+            proxyEl.innerHTML = `${p.value}% <span style="font-size:9px;color:${p.daily >= 0 ? '#4ade80' : '#f87171'}">(${sign}${p.daily}%)</span>`;
+        } else if (proxyEl) {
+            proxyEl.textContent = 'N/A (not available via Yahoo Finance)';
+        }
+
         const vix = snapshot.macro?.find(m => m.ticker === 'VIXY');
         const tnx = snapshot.macro?.find(m => m.ticker === '^TNX');
 
@@ -631,7 +762,6 @@
             if (yieldEl) yieldEl.textContent = tnx.close ? tnx.close.toFixed(2) + '%' : '--';
         }
 
-        // Simple fear/greed heuristic
         const fgEl = document.getElementById('fear-greed');
         if (fgEl && snapshot.regime) {
             const r = snapshot.regime.regime;
