@@ -16,7 +16,6 @@
             width: 100%;
         }
 
-        /* Header */
         .header {
             background: #1e3a5f;
             padding: 10px 24px;
@@ -27,19 +26,17 @@
             flex-shrink: 0;
         }
         .header-left { display: flex; align-items: baseline; gap: 14px; }
-        .header-title { font-size: 17px; font-weight: 700; color: #f8fafc; letter-spacing: -0.3px; }
-        .header-date { font-size: 12px; color: #94a3b8; }
+        .header-title { font-size: 17pt; font-weight: 700; color: #f8fafc; letter-spacing: -0.3px; }
+        .header-date { font-size: 12pt; color: #94a3b8; }
         .header-right { text-align: right; }
         .header-proverb { font-size: 11pt; color: #cbd5e1; font-style: italic; }
         .header-source { font-size: 10pt; color: #64748b; }
 
-        /* Main layout - fills entire viewport */
         .main {
             padding: 16px 24px;
             width: 100%;
         }
 
-        /* Section styling */
         .section {
             background: #1e293b;
             border-radius: 8px;
@@ -58,7 +55,6 @@
         }
         .section-body { padding: 8px 12px; }
 
-        /* Market Trend */
         .trend-row {
             display: flex;
             justify-content: space-between;
@@ -77,7 +73,7 @@
         }
         .regime-label { font-size: 10pt; color: #94a3b8; }
         .regime-value {
-            font-size: 22px;
+            font-size: 22pt;
             font-weight: 800;
             margin: 4px 0;
         }
@@ -89,14 +85,12 @@
             color: #64748b;
         }
 
-        /* Commentary */
         .commentary-text {
             font-size: 11pt;
             color: #e2e8f0;
             line-height: 1.6;
         }
 
-        /* Themes */
         .theme-row {
             display: flex;
             justify-content: space-between;
@@ -110,7 +104,6 @@
         .theme-leader { color: #22c55e; }
         .theme-laggard { color: #ef4444; }
 
-        /* Gainers table */
         .gainers-table { width: 100%; font-size: 10pt; border-collapse: collapse; }
         .gainers-table th {
             text-align: left;
@@ -125,7 +118,6 @@
         }
         .gainers-table tr:last-child td { border-bottom: none; }
 
-        /* Breadth */
         .breadth-stat {
             display: flex;
             justify-content: space-between;
@@ -146,7 +138,6 @@
         .nh-nl-contracting { color: #f59e0b; font-weight: 700; }
         .nh-nl-expanding { color: #22c55e; font-weight: 700; }
 
-        /* Data tables - wider, more spacious */
         .data-table {
             width: 100%;
             font-size: 10pt;
@@ -160,8 +151,22 @@
             font-weight: 600;
             border-bottom: 1px solid #334155;
             white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
         }
         .data-table thead th:first-child { text-align: left; }
+        .data-table thead th:hover {
+            color: #60a5fa;
+            background: #334155;
+        }
+        .data-table thead th .sort-arrow {
+            font-size: 8pt;
+            margin-left: 3px;
+            color: #64748b;
+        }
+        .data-table thead th.sorted .sort-arrow {
+            color: #60a5fa;
+        }
         .data-table tbody td {
             padding: 4px 8px;
             border-bottom: 1px solid #334155;
@@ -174,7 +179,6 @@
         }
         .data-table tbody tr:hover { background: #334155; }
 
-        /* Clickable ticker links */
         .ticker-link {
             color: #3b82f6;
             text-decoration: none;
@@ -184,8 +188,10 @@
             color: #60a5fa;
             text-decoration: underline;
         }
+        .ticker-static {
+            color: #e2e8f0;
+        }
 
-        /* Color coding */
         .pos { color: #22c55e; }
         .neg { color: #ef4444; }
         .neutral { color: #94a3b8; }
@@ -193,7 +199,6 @@
         .below-both { color: #ef4444; font-size: 9pt; }
         .mixed-trend { color: #f59e0b; font-size: 9pt; }
 
-        /* Bar visualization */
         .bar-cell {
             position: relative;
             display: inline-block;
@@ -214,7 +219,6 @@
             z-index: 1;
         }
 
-        /* Right column layout */
         .right-col {
             display: flex;
             flex-direction: column;
@@ -229,7 +233,6 @@
         }
         .tables-grid .section { margin-bottom: 0; }
 
-        /* Chart iframe - full width, prominent */
         .chart-area {
             background: #1e293b;
             border-radius: 8px;
@@ -255,15 +258,13 @@
             background: #0b1120;
         }
 
-        /* Loading */
         .loading {
             text-align: center;
             padding: 40px;
             color: #64748b;
-            font-size: 14px;
+            font-size: 14pt;
         }
 
-        /* Footer */
         .footer {
             text-align: center;
             padding: 10px;
@@ -273,7 +274,6 @@
             flex-shrink: 0;
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0b1120; }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
@@ -303,6 +303,7 @@
 (function() {
     let snapshot = null;
     let currentChartSymbol = 'SPY';
+    let sortState = {};
 
     function pctColor(v) {
         if (v === null || v === undefined) return 'neutral';
@@ -315,6 +316,13 @@
         return sign + v.toFixed(2) + '%';
     }
 
+    function fmtPrice(v) {
+        if (v === null || v === undefined) return 'N/A';
+        if (v >= 1000) return v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        if (v >= 1) return v.toFixed(2);
+        return v.toFixed(4);
+    }
+
     function trendText(m) {
         if (!m) return '<span class="neutral">N/A</span>';
         if (m.above_ema20 && m.above_sma50) return '<span class="above-both">Above Both</span>';
@@ -324,16 +332,35 @@
     }
 
     function tvSymbol(ticker) {
-        let s = ticker;
-        if (ticker.startsWith('^')) s = ticker.substring(1);
-        if (ticker === 'BTC-USD') s = 'BTCUSD';
-        if (ticker === 'ETH-USD') s = 'ETHUSD';
-        if (ticker === 'SOL-USD') s = 'SOLUSD';
-        if (ticker === 'ZEC-USD') s = 'ZECUSD';
-        return s;
+        // Map Yahoo Finance tickers to TradingView symbols
+        const map = {
+            'BTC-USD': 'BTCUSD',
+            'ETH-USD': 'ETHUSD',
+            'SOL-USD': 'SOLUSD',
+            'ZEC-USD': 'ZECUSD',
+            '^TNX': 'US10Y',
+            '^FVX': 'US05Y',
+            '^IRX': 'US02Y',
+        };
+        if (map[ticker]) return map[ticker];
+        if (ticker.startsWith('^')) return ticker.substring(1);
+        return ticker;
+    }
+
+    function isClickable(ticker) {
+        // Treasury yield proxies are clickable via mapped symbols
+        const clickable = ['SPY','QQQ','DIA','IWM','XLK','XLE','XLU','XLY','XLI','XLC','XLB','XLF','XLP','XLV',
+            'SMH','IGV','IHAK','IYZ','IYT','TAN','XHB','XRT','IBB','IYR',
+            'BTC-USD','ETH-USD','SOL-USD','ZEC-USD',
+            'VIXY','GLD','TLT','^TNX','^FVX','^IRX',
+            'ADD','ADDQ'];
+        return clickable.includes(ticker);
     }
 
     function tvLink(ticker, label) {
+        if (!isClickable(ticker)) {
+            return `<span class="ticker-static">${label}</span>`;
+        }
         const sym = tvSymbol(ticker);
         return `<span class="ticker-link" onclick="loadChart('${sym}', '${ticker}')" title="Click to view ${ticker} chart">${label}</span>`;
     }
@@ -380,7 +407,7 @@
 
     function renderGainers(gainers) {
         if (!gainers || gainers.length === 0) {
-            return '<div style="font-size:10px;color:#64748b;padding:4px;">No significant movers today.</div>';
+            return '<div style="font-size:10pt;color:#64748b;padding:4px;">No significant movers today.</div>';
         }
         return `
             <table class="gainers-table">
@@ -398,10 +425,27 @@
         `;
     }
 
-    function renderDataTable(rows, cols) {
+    function getSortedRows(rows, tableId, cols) {
+        const state = sortState[tableId];
+        if (!state) return rows;
+        const { colKey, asc } = state;
+        const sorted = [...rows].sort((a, b) => {
+            const av = a[colKey];
+            const bv = b[colKey];
+            if (av === null || av === undefined) return 1;
+            if (bv === null || bv === undefined) return -1;
+            return asc ? av - bv : bv - av;
+        });
+        return sorted;
+    }
+
+    function renderDataTable(rows, cols, tableId) {
         if (!rows || rows.length === 0) {
-            return '<div style="font-size:10px;color:#64748b;padding:8px;">No data available.</div>';
+            return '<div style="font-size:10pt;color:#64748b;padding:8px;">No data available.</div>';
         }
+
+        const sortedRows = getSortedRows(rows, tableId, cols);
+
         const ranges = {};
         cols.forEach(col => {
             const vals = rows.map(r => r[col.key]).filter(v => v !== null && v !== undefined);
@@ -415,17 +459,23 @@
             }
         });
 
+        const state = sortState[tableId];
+
         return `
-            <table class="data-table">
+            <table class="data-table" id="${tableId}">
                 <thead>
                     <tr>
                         <th>Name</th>
-                        ${cols.map(c => `<th>${c.label}</th>`).join('')}
+                        ${cols.map(c => {
+                            const isSorted = state && state.colKey === c.key;
+                            const arrow = isSorted ? (state.asc ? '▲' : '▼') : '⇅';
+                            return `<th onclick="sortTable('${tableId}', '${c.key}')" class="${isSorted ? 'sorted' : ''}">${c.label}<span class="sort-arrow">${arrow}</span></th>`;
+                        }).join('')}
                         <th>Trend</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${rows.map(r => `
+                    ${sortedRows.map(r => `
                         <tr>
                             <td>${tvLink(r.ticker, r.ticker + ': ' + r.name)}</td>
                             ${cols.map(c => `<td>${renderBar(r[c.key], ranges[c.key])}</td>`).join('')}
@@ -436,6 +486,16 @@
             </table>
         `;
     }
+
+    window.sortTable = function(tableId, colKey) {
+        const current = sortState[tableId];
+        if (current && current.colKey === colKey) {
+            sortState[tableId] = { colKey, asc: !current.asc };
+        } else {
+            sortState[tableId] = { colKey, asc: false };
+        }
+        renderDashboard();
+    };
 
     window.loadChart = function(symbol, originalTicker) {
         currentChartSymbol = symbol;
@@ -458,6 +518,7 @@
         const thematic = snapshot.thematic || [];
         const macro = snapshot.macro || [];
         const crypto = snapshot.crypto || [];
+        const advDec = snapshot.advance_decline || [];
 
         const offSpread = regime.offense_vs_defense || 0;
         const offText = offSpread > 0 ? 
@@ -493,11 +554,11 @@
                         <div class="theme-row"><span class="theme-label">Rotation (vs SPY)</span><span class="theme-value">${offText}</span></div>
                         <div class="theme-row"><span class="theme-label">Daily:</span><span class="theme-value">Mixed leadership</span></div>
                         <div class="theme-row"><span class="theme-label">Weekly:</span><span class="theme-value">See sector table</span></div>
-                        <div style="margin-top:5px;font-size:10px;color:#94a3b8;">
+                        <div style="margin-top:5px;font-size:10pt;color:#94a3b8;">
                             <strong>Focus:</strong> Software M&A, AI Infra, Energy, Crypto, Bond Yields
                         </div>
                         <div style="margin-top:6px;">
-                            <div style="font-size:10px;color:#94a3b8;margin-bottom:3px;"><strong>Top gainers:</strong></div>
+                            <div style="font-size:10pt;color:#94a3b8;margin-bottom:3px;"><strong>Top gainers:</strong></div>
                             ${renderGainers(gainers)}
                         </div>
                     </div>
@@ -530,14 +591,26 @@
                 </div>
 
                 <div class="section">
+                    <div class="section-header">Advance Decline</div>
+                    <div class="section-body" style="padding:0;">
+                        ${renderDataTable(advDec, [
+                            {key: 'daily', label: '% Daily'},
+                            {key: 'p5d', label: '% 5D'},
+                            {key: 'off_high', label: '% Off High'},
+                            {key: 'ytd', label: '% YTD'},
+                        ], 'advdec')}
+                    </div>
+                </div>
+
+                <div class="section">
                     <div class="section-header">T2108 / % Above 40DSMA</div>
                     <div class="section-body">
-                        <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">
+                        <div style="font-size:10pt;color:#94a3b8;margin-bottom:4px;">
                             <strong>Proxy ($SPXA50R):</strong>
                             <span id="t2108-proxy-value" style="color:#e2e8f0;">--</span>
                         </div>
                         <div style="border-top:1px solid #334155;margin:4px 0;padding-top:4px;">
-                            <div style="font-size:10px;color:#94a3b8;margin-bottom:3px;"><strong>Manual T2108:</strong></div>
+                            <div style="font-size:10pt;color:#94a3b8;margin-bottom:3px;"><strong>Manual T2108:</strong></div>
                             <div class="breadth-stat">
                                 <span>A: Above 40DSMA</span>
                                 <span><input type="number" class="breadth-input" id="t2108-a" value="" placeholder="0" onchange="updateT2108()"></span>
@@ -548,13 +621,13 @@
                             </div>
                             <div class="breadth-stat" style="margin-top:3px;">
                                 <span><strong>T2108 = A/(A+B)×100</strong></span>
-                                <span id="t2108-result" style="font-size:14px;font-weight:700;color:#94a3b8;">--</span>
+                                <span id="t2108-result" style="font-size:14pt;font-weight:700;color:#94a3b8;">--</span>
                             </div>
                             <div class="breadth-stat">
                                 <span>Condition</span>
-                                <span id="t2108-condition" style="font-size:10px;font-weight:600;">--</span>
+                                <span id="t2108-condition" style="font-size:10pt;font-weight:600;">--</span>
                             </div>
-                            <div style="margin-top:3px;font-size:9px;color:#64748b;">
+                            <div style="margin-top:3px;font-size:9pt;color:#64748b;">
                                 &lt;20% = Oversold · 20-70% = Neutral · &gt;70% = Overbought
                             </div>
                         </div>
@@ -564,8 +637,8 @@
                 <div class="section">
                     <div class="section-header">4. Situational Awareness</div>
                     <div class="section-body">
-                        <div style="font-size:10px;color:#94a3b8;margin-bottom:3px;">Upcoming macro (next 7 days):</div>
-                        <div style="font-size:10px;color:#e2e8f0;line-height:1.5;" id="econ-calendar">
+                        <div style="font-size:10pt;color:#94a3b8;margin-bottom:3px;">Upcoming macro (next 7 days):</div>
+                        <div style="font-size:10pt;color:#e2e8f0;line-height:1.5;" id="econ-calendar">
                             <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#f59e0b;">Mon Oct 13</span> · No major events</div>
                             <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#f59e0b;">Tue Oct 14</span> · PPI, NFIB</div>
                             <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#f59e0b;">Wed Oct 15</span> · CPI, FOMC Minutes</div>
@@ -580,26 +653,14 @@
                         <div class="breadth-stat"><span>VIX</span><span id="vix-level" class="neutral">--</span></div>
                         <div class="breadth-stat"><span>VIX vs 5D</span><span id="vix-change" class="neutral">--</span></div>
                         <div class="breadth-stat"><span>10Y Yield</span><span id="yield-10y" class="neutral">--</span></div>
-                        <div style="margin-top:4px;font-size:10px;color:#94a3b8;">Fear/Greed: <span id="fear-greed">Neutral</span></div>
+                        <div style="margin-top:4px;font-size:10pt;color:#94a3b8;">Fear/Greed: <span id="fear-greed">Neutral</span></div>
                     </div>
                 </div>
 
             </div>
 
-            <!-- RIGHT COLUMN: Chart at TOP, tables below -->
+            <!-- RIGHT COLUMN -->
             <div class="right-col">
-
-                <!-- Chart Iframe - AT THE TOP -->
-                <div class="chart-area">
-                    <div class="chart-header">
-                        <span>TradingView Chart: <span id="chart-symbol-label">SPY</span></span>
-                        <span style="font-size:10px;color:#64748b;">Click any ticker to change</span>
-                    </div>
-                    <iframe id="tv-chart" class="chart-iframe"
-                        src="https://www.tradingview.com/widgetembed/?frameElementId=tv-chart&symbol=SPY&interval=D&hidesidetoolbar=1&hidetoptoolbar=1&theme=dark&style=1&timezone=America/New_York&withdateranges=1"
-                        allowfullscreen>
-                    </iframe>
-                </div>
 
                 <!-- Major Indexes -->
                 <div class="section">
@@ -612,9 +673,22 @@
                                 {key: 'p5d', label: '% 5D'},
                                 {key: 'off_high', label: '% Off High'},
                                 {key: 'ytd', label: '% YTD'},
-                            ]
+                            ],
+                            'indexes'
                         )}
                     </div>
+                </div>
+
+                <!-- Chart Iframe -->
+                <div class="chart-area">
+                    <div class="chart-header">
+                        <span>TradingView Chart: <span id="chart-symbol-label">SPY</span></span>
+                        <span style="font-size:10pt;color:#64748b;">Click any ticker to change</span>
+                    </div>
+                    <iframe id="tv-chart" class="chart-iframe"
+                        src="https://www.tradingview.com/widgetembed/?frameElementId=tv-chart&symbol=SPY&interval=D&hidesidetoolbar=1&hidetoptoolbar=1&theme=dark&style=1&timezone=America/New_York&withdateranges=1"
+                        allowfullscreen>
+                    </iframe>
                 </div>
 
                 <!-- 2x2 Grid: Sectors | Thematic -->
@@ -627,7 +701,7 @@
                                 {key: 'p5d', label: '% 5D'},
                                 {key: 'off_high', label: '% Off High'},
                                 {key: 'ytd', label: '% YTD'},
-                            ])}
+                            ], 'sectors')}
                         </div>
                     </div>
                     <div class="section">
@@ -638,7 +712,7 @@
                                 {key: 'p5d', label: '% 5D'},
                                 {key: 'off_high', label: '% Off High'},
                                 {key: 'ytd', label: '% YTD'},
-                            ])}
+                            ], 'thematic')}
                         </div>
                     </div>
                 </div>
@@ -648,12 +722,12 @@
                     <div class="section">
                         <div class="section-header">Crypto</div>
                         <div class="section-body" style="padding:0;">
-                            ${renderDataTable(crypto, [
+                            ${renderDataTable(crypto.map(c => ({...c, name: c.name + ' ($' + fmtPrice(c.close) + ')'})), [
                                 {key: 'daily', label: '% Daily'},
                                 {key: 'p5d', label: '% 5D'},
                                 {key: 'off_high', label: '% Off High'},
                                 {key: 'ytd', label: '% YTD'},
-                            ])}
+                            ], 'crypto')}
                         </div>
                     </div>
                     <div class="section">
@@ -664,7 +738,7 @@
                                 {key: 'p5d', label: '% 5D'},
                                 {key: 'off_high', label: '% Off High'},
                                 {key: 'ytd', label: '% YTD'},
-                            ])}
+                            ], 'macro')}
                         </div>
                     </div>
                 </div>
@@ -740,7 +814,7 @@
         if (proxyEl && snapshot.t2108_proxy) {
             const p = snapshot.t2108_proxy;
             const sign = p.daily >= 0 ? '+' : '';
-            proxyEl.innerHTML = `${p.value}% <span style="font-size:9px;color:${p.daily >= 0 ? '#22c55e' : '#ef4444'}">(${sign}${p.daily}%)</span>`;
+            proxyEl.innerHTML = `${p.value}% <span style="font-size:9pt;color:${p.daily >= 0 ? '#22c55e' : '#ef4444'}">(${sign}${p.daily}%)</span>`;
         } else if (proxyEl) {
             proxyEl.textContent = 'N/A';
         }
