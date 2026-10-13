@@ -1,0 +1,35 @@
+name: Refresh dashboard data
+
+on:
+  schedule:
+    - cron: '17 20 * * 1-5'   # 1:17 PM PT (20:17 UTC) Mon-Fri
+  workflow_dispatch:           # Manual trigger + external cron fallback
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate data
+        run: python scripts/build_data.py --out-dir data
+        env:
+          TZ: America/Los_Angeles
+
+      - name: Commit and push data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --staged --quiet || (git commit -m "chore: refresh dashboard data [automated]" && git push)
