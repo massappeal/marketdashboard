@@ -61,12 +61,24 @@ MACRO = {
     "^IRX": "2-Yr Yield",
 }
 
+# T2108 proxy — % of S&P 500 stocks above 50-day MA (StockCharts symbol)
+# Note: Yahoo Finance may not have this exact symbol; we try multiple variants
+T2108_PROXIES = ["^SPXA50R", "$SPXA50R", "SPXA50R"]
+
+# Crypto
+CRYPTO = {
+    "BTC-USD": "Bitcoin",
+    "ETH-USD": "Ethereum",
+    "SOL-USD": "Solana",
+    "ZEC-USD": "Zcash",
+}
+
 # Offense vs Defense tickers for regime check
 OFFENSE_TICKERS = ["XLK", "SMH", "IGV"]
 DEFENSE_TICKERS = ["XLU", "XLP", "XLV"]
 
 # All tickers to fetch
-ALL_TICKERS = {**INDEXES, **SECTORS, **THEMATIC, **MACRO}
+ALL_TICKERS = {**INDEXES, **SECTORS, **THEMATIC, **MACRO, **CRYPTO}
 
 # Sector colors (borrowed from traderwillhu)
 SECTOR_COLORS = {
@@ -369,6 +381,23 @@ def main():
     print("\nFinding top gainers...")
     top_gainers = get_top_gainers(all_metrics)
 
+    # Fetch T2108 proxy
+    t2108_proxy = None
+    for proxy_ticker in T2108_PROXIES:
+        print(f"  Trying T2108 proxy: {proxy_ticker}")
+        hist = fetch_history(proxy_ticker, period="6mo")
+        if hist is not None and len(hist) > 0:
+            t2108_proxy = {
+                "ticker": proxy_ticker,
+                "value": round(hist["Close"].iloc[-1], 2),
+                "daily": round((hist["Close"].iloc[-1] / hist["Close"].iloc[-2] - 1) * 100, 2) if len(hist) > 1 else None,
+            }
+            print(f"    Success: {t2108_proxy['value']}")
+            break
+        time.sleep(0.15)
+    if t2108_proxy is None:
+        print("  T2108 proxy not available via Yahoo Finance")
+
     # Build snapshot
     snapshot = {
         "built_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
@@ -380,6 +409,8 @@ def main():
         "sectors": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in SECTORS.items() if t in all_metrics],
         "thematic": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in THEMATIC.items() if t in all_metrics],
         "macro": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in MACRO.items() if t in all_metrics],
+        "crypto": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in CRYPTO.items() if t in all_metrics],
+        "t2108_proxy": t2108_proxy,
     }
 
     # Sort sectors by 5D change
