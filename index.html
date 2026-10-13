@@ -6,123 +6,125 @@
     <title>Daily Market Recap</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0a0e1a;
-            color: #e2e8f0;
-            font-size: 12px;
-            line-height: 1.4;
-            min-width: 1400px;
-            overflow-x: auto;
+        html, body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            background: #0b1120;
+            color: #f8fafc;
+            font-size: 11px;
+            line-height: 1.45;
+            height: 100%;
+            width: 100%;
         }
 
         /* Header */
         .header {
             background: #1e3a5f;
-            padding: 8px 20px;
+            padding: 10px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid #334155;
+            flex-shrink: 0;
         }
-        .header-left { display: flex; align-items: baseline; gap: 12px; }
-        .header-title { font-size: 15px; font-weight: 700; color: #f8fafc; }
-        .header-date { font-size: 11px; color: #94a3b8; }
+        .header-left { display: flex; align-items: baseline; gap: 14px; }
+        .header-title { font-size: 17px; font-weight: 700; color: #f8fafc; letter-spacing: -0.3px; }
+        .header-date { font-size: 12px; color: #94a3b8; }
         .header-right { text-align: right; }
-        .header-proverb { font-size: 10px; color: #cbd5e1; font-style: italic; }
-        .header-source { font-size: 9px; color: #64748b; }
+        .header-proverb { font-size: 11px; color: #cbd5e1; font-style: italic; }
+        .header-source { font-size: 10px; color: #64748b; }
 
-        /* Main layout */
+        /* Main layout - fills entire viewport */
         .main {
             display: grid;
-            grid-template-columns: 340px 1fr;
-            gap: 12px;
-            padding: 12px 20px;
-            min-width: 1400px;
+            grid-template-columns: 460px 1fr;
+            gap: 16px;
+            padding: 16px 24px;
+            width: 100%;
+            min-height: 0;
         }
 
         /* Section styling */
         .section {
-            background: #111827;
-            border-radius: 6px;
-            margin-bottom: 10px;
+            background: #1e293b;
+            border-radius: 8px;
+            margin-bottom: 12px;
             overflow: hidden;
-            border: 1px solid #1e293b;
+            border: 1px solid #334155;
         }
         .section-header {
-            background: #1e293b;
-            padding: 5px 10px;
-            font-size: 10px;
+            background: #1e3a5f;
+            padding: 7px 12px;
+            font-size: 11px;
             font-weight: 700;
             color: #60a5fa;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
         }
-        .section-body { padding: 6px 8px; }
+        .section-body { padding: 8px 12px; }
 
         /* Market Trend */
         .trend-row {
             display: flex;
             justify-content: space-between;
-            padding: 3px 0;
+            padding: 4px 0;
             border-bottom: 1px solid #334155;
-            font-size: 10px;
+            font-size: 11px;
         }
         .trend-row:last-child { border-bottom: none; }
-        .trend-yes { color: #4ade80; font-weight: 700; }
-        .trend-no { color: #f87171; font-weight: 700; }
+        .trend-yes { color: #22c55e; font-weight: 700; }
+        .trend-no { color: #ef4444; font-weight: 700; }
         .regime-box {
             text-align: center;
-            padding: 6px;
-            margin-top: 4px;
+            padding: 10px;
+            margin-top: 6px;
             border-top: 1px solid #334155;
         }
-        .regime-label { font-size: 9px; color: #94a3b8; }
+        .regime-label { font-size: 10px; color: #94a3b8; }
         .regime-value {
-            font-size: 16px;
+            font-size: 22px;
             font-weight: 800;
-            margin: 2px 0;
+            margin: 4px 0;
         }
-        .regime-green { color: #4ade80; }
-        .regime-yellow { color: #fbbf24; }
-        .regime-red { color: #f87171; }
+        .regime-green { color: #22c55e; }
+        .regime-yellow { color: #f59e0b; }
+        .regime-red { color: #ef4444; }
         .regime-playbook {
-            font-size: 8px;
+            font-size: 9px;
             color: #64748b;
         }
 
         /* Commentary */
         .commentary-text {
-            font-size: 10px;
-            color: #cbd5e1;
-            line-height: 1.5;
+            font-size: 11px;
+            color: #e2e8f0;
+            line-height: 1.6;
         }
 
         /* Themes */
         .theme-row {
             display: flex;
             justify-content: space-between;
-            padding: 2px 0;
-            font-size: 9px;
+            padding: 3px 0;
+            font-size: 10px;
             border-bottom: 1px solid #334155;
         }
         .theme-row:last-child { border-bottom: none; }
         .theme-label { color: #94a3b8; }
-        .theme-value { color: #e2e8f0; }
-        .theme-leader { color: #4ade80; }
-        .theme-laggard { color: #f87171; }
+        .theme-value { color: #f8fafc; }
+        .theme-leader { color: #22c55e; }
+        .theme-laggard { color: #ef4444; }
 
         /* Gainers table */
-        .gainers-table { width: 100%; font-size: 9px; border-collapse: collapse; }
+        .gainers-table { width: 100%; font-size: 10px; border-collapse: collapse; }
         .gainers-table th {
             text-align: left;
-            padding: 2px 4px;
+            padding: 3px 5px;
             background: #334155;
             color: #94a3b8;
             font-weight: 600;
         }
         .gainers-table td {
-            padding: 2px 4px;
+            padding: 3px 5px;
             border-bottom: 1px solid #334155;
         }
         .gainers-table tr:last-child td { border-bottom: none; }
@@ -131,33 +133,33 @@
         .breadth-stat {
             display: flex;
             justify-content: space-between;
-            padding: 2px 0;
-            font-size: 10px;
+            padding: 3px 0;
+            font-size: 11px;
         }
         .breadth-input {
             background: #0f172a;
             border: 1px solid #475569;
-            color: #e2e8f0;
-            padding: 2px 6px;
-            border-radius: 3px;
-            width: 60px;
-            font-size: 10px;
+            color: #f8fafc;
+            padding: 3px 8px;
+            border-radius: 4px;
+            width: 70px;
+            font-size: 11px;
             text-align: right;
         }
         .breadth-input:focus { outline: none; border-color: #60a5fa; }
-        .nh-nl-contracting { color: #fbbf24; font-weight: 700; }
-        .nh-nl-expanding { color: #4ade80; font-weight: 700; }
+        .nh-nl-contracting { color: #f59e0b; font-weight: 700; }
+        .nh-nl-expanding { color: #22c55e; font-weight: 700; }
 
-        /* Data tables */
+        /* Data tables - wider, more spacious */
         .data-table {
             width: 100%;
-            font-size: 9px;
+            font-size: 10px;
             border-collapse: collapse;
         }
         .data-table thead th {
             background: #1e3a5f;
             color: #94a3b8;
-            padding: 4px 5px;
+            padding: 5px 8px;
             text-align: right;
             font-weight: 600;
             border-bottom: 1px solid #334155;
@@ -165,8 +167,8 @@
         }
         .data-table thead th:first-child { text-align: left; }
         .data-table tbody td {
-            padding: 3px 5px;
-            border-bottom: 1px solid #1e293b;
+            padding: 4px 8px;
+            border-bottom: 1px solid #334155;
             text-align: right;
             white-space: nowrap;
         }
@@ -174,26 +176,26 @@
             text-align: left;
             font-weight: 600;
         }
-        .data-table tbody tr:hover { background: #1e293b; }
+        .data-table tbody tr:hover { background: #334155; }
 
         /* Clickable ticker links */
         .ticker-link {
-            color: #60a5fa;
+            color: #3b82f6;
             text-decoration: none;
             cursor: pointer;
         }
         .ticker-link:hover {
-            color: #93c5fd;
+            color: #60a5fa;
             text-decoration: underline;
         }
 
         /* Color coding */
-        .pos { color: #4ade80; }
-        .neg { color: #f87171; }
+        .pos { color: #22c55e; }
+        .neg { color: #ef4444; }
         .neutral { color: #94a3b8; }
-        .above-both { color: #4ade80; font-size: 8px; }
-        .below-both { color: #f87171; font-size: 8px; }
-        .mixed-trend { color: #fbbf24; font-size: 8px; }
+        .above-both { color: #22c55e; font-size: 9px; }
+        .below-both { color: #ef4444; font-size: 9px; }
+        .mixed-trend { color: #f59e0b; font-size: 9px; }
 
         /* Bar visualization */
         .bar-cell {
@@ -205,12 +207,12 @@
             position: absolute;
             top: 0;
             height: 100%;
-            opacity: 0.12;
+            opacity: 0.15;
             border-radius: 2px;
             z-index: 0;
         }
-        .bar-bg.pos { background: #4ade80; left: 0; }
-        .bar-bg.neg { background: #f87171; right: 0; }
+        .bar-bg.pos { background: #22c55e; left: 0; }
+        .bar-bg.neg { background: #ef4444; right: 0; }
         .bar-text {
             position: relative;
             z-index: 1;
@@ -220,26 +222,28 @@
         .right-col {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
+            min-width: 0;
         }
         .tables-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
         }
         .tables-grid .section { margin-bottom: 0; }
 
-        /* Chart iframe */
+        /* Chart iframe - full width, prominent */
         .chart-area {
-            background: #111827;
-            border-radius: 6px;
-            border: 1px solid #1e293b;
+            background: #1e293b;
+            border-radius: 8px;
+            border: 1px solid #334155;
             overflow: hidden;
+            margin-bottom: 12px;
         }
         .chart-header {
-            background: #1e293b;
-            padding: 5px 10px;
-            font-size: 10px;
+            background: #1e3a5f;
+            padding: 7px 12px;
+            font-size: 11px;
             font-weight: 700;
             color: #60a5fa;
             display: flex;
@@ -249,9 +253,9 @@
         .chart-header span { color: #94a3b8; font-weight: 400; }
         .chart-iframe {
             width: 100%;
-            height: 480px;
+            height: 580px;
             border: none;
-            background: #0a0e1a;
+            background: #0b1120;
         }
 
         /* Loading */
@@ -265,15 +269,16 @@
         /* Footer */
         .footer {
             text-align: center;
-            padding: 8px;
-            font-size: 9px;
+            padding: 10px;
+            font-size: 10px;
             color: #475569;
             border-top: 1px solid #1e293b;
+            flex-shrink: 0;
         }
 
         /* Scrollbar */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #0a0e1a; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0b1120; }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
     </style>
 </head>
@@ -378,7 +383,7 @@
 
     function renderGainers(gainers) {
         if (!gainers || gainers.length === 0) {
-            return '<div style="font-size:9px;color:#64748b;padding:3px;">No significant movers today.</div>';
+            return '<div style="font-size:10px;color:#64748b;padding:4px;">No significant movers today.</div>';
         }
         return `
             <table class="gainers-table">
@@ -397,12 +402,19 @@
     }
 
     function renderDataTable(rows, cols) {
+        if (!rows || rows.length === 0) {
+            return '<div style="font-size:10px;color:#64748b;padding:8px;">No data available.</div>';
+        }
         const ranges = {};
         cols.forEach(col => {
             const vals = rows.map(r => r[col.key]).filter(v => v !== null && v !== undefined);
-            ranges[col.key] = [Math.min(...vals, 0), Math.max(...vals, 0)];
-            if (ranges[col.key][0] === ranges[col.key][1]) {
-                ranges[col.key] = [ranges[col.key][0] - 1, ranges[col.key][1] + 1];
+            if (vals.length > 0) {
+                ranges[col.key] = [Math.min(...vals, 0), Math.max(...vals, 0)];
+                if (ranges[col.key][0] === ranges[col.key][1]) {
+                    ranges[col.key] = [ranges[col.key][0] - 1, ranges[col.key][1] + 1];
+                }
+            } else {
+                ranges[col.key] = [-1, 1];
             }
         });
 
@@ -458,7 +470,7 @@
         document.getElementById('header-date').textContent = snapshot.market_date || '';
 
         const html = `
-        <div style="display:grid;grid-template-columns:340px 1fr;gap:12px;">
+        <div style="display:grid;grid-template-columns:460px 1fr;gap:16px;width:100%;">
 
             <!-- LEFT COLUMN -->
             <div>
@@ -484,11 +496,11 @@
                         <div class="theme-row"><span class="theme-label">Rotation (vs SPY)</span><span class="theme-value">${offText}</span></div>
                         <div class="theme-row"><span class="theme-label">Daily:</span><span class="theme-value">Mixed leadership</span></div>
                         <div class="theme-row"><span class="theme-label">Weekly:</span><span class="theme-value">See sector table</span></div>
-                        <div style="margin-top:5px;font-size:9px;color:#94a3b8;">
+                        <div style="margin-top:5px;font-size:10px;color:#94a3b8;">
                             <strong>Focus:</strong> Software M&A, AI Infra, Energy, Crypto, Bond Yields
                         </div>
                         <div style="margin-top:6px;">
-                            <div style="font-size:9px;color:#94a3b8;margin-bottom:3px;"><strong>Top gainers:</strong></div>
+                            <div style="font-size:10px;color:#94a3b8;margin-bottom:3px;"><strong>Top gainers:</strong></div>
                             ${renderGainers(gainers)}
                         </div>
                     </div>
@@ -523,12 +535,12 @@
                 <div class="section">
                     <div class="section-header">T2108 / % Above 40DSMA</div>
                     <div class="section-body">
-                        <div style="font-size:9px;color:#94a3b8;margin-bottom:4px;">
+                        <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">
                             <strong>Proxy ($SPXA50R):</strong>
-                            <span id="t2108-proxy-value" style="color:#cbd5e1;">--</span>
+                            <span id="t2108-proxy-value" style="color:#e2e8f0;">--</span>
                         </div>
                         <div style="border-top:1px solid #334155;margin:4px 0;padding-top:4px;">
-                            <div style="font-size:9px;color:#94a3b8;margin-bottom:3px;"><strong>Manual T2108:</strong></div>
+                            <div style="font-size:10px;color:#94a3b8;margin-bottom:3px;"><strong>Manual T2108:</strong></div>
                             <div class="breadth-stat">
                                 <span>A: Above 40DSMA</span>
                                 <span><input type="number" class="breadth-input" id="t2108-a" value="" placeholder="0" onchange="updateT2108()"></span>
@@ -539,13 +551,13 @@
                             </div>
                             <div class="breadth-stat" style="margin-top:3px;">
                                 <span><strong>T2108 = A/(A+B)×100</strong></span>
-                                <span id="t2108-result" style="font-size:13px;font-weight:700;color:#94a3b8;">--</span>
+                                <span id="t2108-result" style="font-size:14px;font-weight:700;color:#94a3b8;">--</span>
                             </div>
                             <div class="breadth-stat">
                                 <span>Condition</span>
-                                <span id="t2108-condition" style="font-size:9px;font-weight:600;">--</span>
+                                <span id="t2108-condition" style="font-size:10px;font-weight:600;">--</span>
                             </div>
-                            <div style="margin-top:3px;font-size:8px;color:#64748b;">
+                            <div style="margin-top:3px;font-size:9px;color:#64748b;">
                                 &lt;20% = Oversold · 20-70% = Neutral · &gt;70% = Overbought
                             </div>
                         </div>
@@ -555,12 +567,12 @@
                 <div class="section">
                     <div class="section-header">4. Situational Awareness</div>
                     <div class="section-body">
-                        <div style="font-size:9px;color:#94a3b8;margin-bottom:3px;">Upcoming macro (next 7 days):</div>
-                        <div style="font-size:9px;color:#cbd5e1;line-height:1.5;" id="econ-calendar">
-                            <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#fbbf24;">Mon Oct 13</span> · No major events</div>
-                            <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#fbbf24;">Tue Oct 14</span> · PPI, NFIB</div>
-                            <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#fbbf24;">Wed Oct 15</span> · CPI, FOMC Minutes</div>
-                            <div style="padding:2px 0;"><span style="color:#fbbf24;">Thu Oct 16</span> · Jobless Claims, Retail Sales</div>
+                        <div style="font-size:10px;color:#94a3b8;margin-bottom:3px;">Upcoming macro (next 7 days):</div>
+                        <div style="font-size:10px;color:#e2e8f0;line-height:1.5;" id="econ-calendar">
+                            <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#f59e0b;">Mon Oct 13</span> · No major events</div>
+                            <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#f59e0b;">Tue Oct 14</span> · PPI, NFIB</div>
+                            <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#f59e0b;">Wed Oct 15</span> · CPI, FOMC Minutes</div>
+                            <div style="padding:2px 0;"><span style="color:#f59e0b;">Thu Oct 16</span> · Jobless Claims, Retail Sales</div>
                         </div>
                     </div>
                 </div>
@@ -571,14 +583,26 @@
                         <div class="breadth-stat"><span>VIX</span><span id="vix-level" class="neutral">--</span></div>
                         <div class="breadth-stat"><span>VIX vs 5D</span><span id="vix-change" class="neutral">--</span></div>
                         <div class="breadth-stat"><span>10Y Yield</span><span id="yield-10y" class="neutral">--</span></div>
-                        <div style="margin-top:4px;font-size:9px;color:#94a3b8;">Fear/Greed: <span id="fear-greed">Neutral</span></div>
+                        <div style="margin-top:4px;font-size:10px;color:#94a3b8;">Fear/Greed: <span id="fear-greed">Neutral</span></div>
                     </div>
                 </div>
 
             </div>
 
-            <!-- RIGHT COLUMN -->
+            <!-- RIGHT COLUMN: Chart at TOP, tables below -->
             <div class="right-col">
+
+                <!-- Chart Iframe - AT THE TOP -->
+                <div class="chart-area">
+                    <div class="chart-header">
+                        <span>TradingView Chart: <span id="chart-symbol-label">SPY</span></span>
+                        <span style="font-size:10px;color:#64748b;">Click any ticker to change</span>
+                    </div>
+                    <iframe id="tv-chart" class="chart-iframe"
+                        src="https://www.tradingview.com/widgetembed/?frameElementId=tv-chart&symbol=SPY&interval=D&hidesidetoolbar=1&hidetoptoolbar=1&theme=dark&style=1&timezone=America/New_York&withdateranges=1"
+                        allowfullscreen>
+                    </iframe>
+                </div>
 
                 <!-- Major Indexes -->
                 <div class="section">
@@ -648,18 +672,6 @@
                     </div>
                 </div>
 
-                <!-- Chart Iframe -->
-                <div class="chart-area">
-                    <div class="chart-header">
-                        <span>TradingView Chart: <span id="chart-symbol-label">SPY</span></span>
-                        <span style="font-size:9px;color:#64748b;">Click any ticker above to change</span>
-                    </div>
-                    <iframe id="tv-chart" class="chart-iframe"
-                        src="https://www.tradingview.com/widgetembed/?frameElementId=tv-chart&symbol=SPY&interval=D&hidesidetoolbar=1&hidetoptoolbar=1&theme=dark&style=1&timezone=America/New_York&withdateranges=1"
-                        allowfullscreen>
-                    </iframe>
-                </div>
-
             </div>
         </div>
         `;
@@ -712,15 +724,15 @@
 
         if (resultEl) {
             resultEl.textContent = val + '%';
-            if (t2108 >= 70) resultEl.style.color = '#4ade80';
-            else if (t2108 <= 20) resultEl.style.color = '#f87171';
-            else resultEl.style.color = '#fbbf24';
+            if (t2108 >= 70) resultEl.style.color = '#22c55e';
+            else if (t2108 <= 20) resultEl.style.color = '#ef4444';
+            else resultEl.style.color = '#f59e0b';
         }
 
         if (condEl) {
-            if (t2108 >= 70) { condEl.textContent = 'OVERBOUGHT'; condEl.style.color = '#4ade80'; }
-            else if (t2108 <= 20) { condEl.textContent = 'OVERSOLD'; condEl.style.color = '#f87171'; }
-            else { condEl.textContent = 'NEUTRAL'; condEl.style.color = '#fbbf24'; }
+            if (t2108 >= 70) { condEl.textContent = 'OVERBOUGHT'; condEl.style.color = '#22c55e'; }
+            else if (t2108 <= 20) { condEl.textContent = 'OVERSOLD'; condEl.style.color = '#ef4444'; }
+            else { condEl.textContent = 'NEUTRAL'; condEl.style.color = '#f59e0b'; }
         }
     };
 
@@ -731,7 +743,7 @@
         if (proxyEl && snapshot.t2108_proxy) {
             const p = snapshot.t2108_proxy;
             const sign = p.daily >= 0 ? '+' : '';
-            proxyEl.innerHTML = `${p.value}% <span style="font-size:8px;color:${p.daily >= 0 ? '#4ade80' : '#f87171'}">(${sign}${p.daily}%)</span>`;
+            proxyEl.innerHTML = `${p.value}% <span style="font-size:9px;color:${p.daily >= 0 ? '#22c55e' : '#ef4444'}">(${sign}${p.daily}%)</span>`;
         } else if (proxyEl) {
             proxyEl.textContent = 'N/A';
         }
