@@ -35,12 +35,8 @@
 
         /* Main layout - fills entire viewport */
         .main {
-            display: grid;
-            grid-template-columns: 460px 1fr;
-            gap: 16px;
             padding: 16px 24px;
             width: 100%;
-            min-height: 0;
         }
 
         /* Section styling */
@@ -224,6 +220,7 @@
             flex-direction: column;
             gap: 12px;
             min-width: 0;
+            overflow: hidden;
         }
         .tables-grid {
             display: grid;
@@ -470,7 +467,7 @@
         document.getElementById('header-date').textContent = snapshot.market_date || '';
 
         const html = `
-        <div style="display:grid;grid-template-columns:460px 1fr;gap:16px;width:100%;">
+        <div style="display:grid;grid-template-columns:460px 1fr;gap:16px;width:100%;min-width:100%;">
 
             <!-- LEFT COLUMN -->
             <div>
