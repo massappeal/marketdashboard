@@ -62,6 +62,9 @@
         .section-header:hover {
             background: #334155;
         }
+        .section-body {
+            padding: 10px 14px;
+        }
         .collapse-btn {
             font-size: 10pt;
             color: #94a3b8;
@@ -752,8 +755,11 @@
                 <div class="section" id="leaders">
                     <div class="section-header" onclick="toggleSection('leaders')">Liquid Leaders (Top Gainers)<span class="collapse-btn">▼</span></div>
                     <div class="section-body" style="padding:0;">
-                        ${renderDataTable(
-                            leaders.filter(l => l.daily > 1.5).sort((a,b) => b.daily - a.daily).slice(0, 10),
+${(() => {
+                            const sortedLeaders = [...leaders].sort((a,b) => b.daily - a.daily);
+                            const topGainers = sortedLeaders.slice(0, 10);
+                            if (topGainers.length === 0) return '<div style="font-size:10pt;color:#64748b;padding:8px;">No leader data available.</div>';
+                            return renderDataTable(topGainers,
                             [
                                 {key: 'daily', label: '% Daily'},
                                 {key: 'p5d', label: '% 5D'},
@@ -761,7 +767,8 @@
                                 {key: 'ytd', label: '% YTD'},
                             ],
                             'leaders'
-                        )}
+                        );
+                        })()}
                     </div>
                 </div>
 
