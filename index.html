@@ -28,6 +28,7 @@
         .header-left { display: flex; align-items: baseline; gap: 14px; }
         .header-title { font-size: 17pt; font-weight: 700; color: #f8fafc; letter-spacing: -0.3px; }
         .header-date { font-size: 12pt; color: #94a3b8; }
+        .header-timestamp { font-size: 9pt; color: #64748b; }
         .header-right { text-align: right; }
         .header-proverb { font-size: 11pt; color: #cbd5e1; font-style: italic; }
         .header-source { font-size: 10pt; color: #64748b; }
@@ -79,7 +80,6 @@
         .section.collapsed .collapse-btn {
             transform: rotate(-90deg);
         }
-        .section-body { padding: 8px 12px; }
 
         .trend-row {
             display: flex;
@@ -164,10 +164,15 @@
         .nh-nl-contracting { color: #f59e0b; font-weight: 700; }
         .nh-nl-expanding { color: #22c55e; font-weight: 700; }
 
+        .table-scroll {
+            overflow-x: auto;
+            width: 100%;
+        }
         .data-table {
             width: 100%;
             font-size: 10pt;
             border-collapse: collapse;
+            min-width: 500px;
         }
         .data-table thead th {
             background: #1e3a5f;
@@ -310,6 +315,7 @@
         <div class="header-left">
             <div class="header-title">Daily Market Recap</div>
             <div class="header-date" id="header-date">Loading...</div>
+            <div class="header-timestamp" id="header-timestamp"></div>
         </div>
         <div class="header-right">
             <div class="header-proverb">"Plan your trade and trade your plan."</div>
@@ -358,7 +364,6 @@
     }
 
     function tvSymbol(ticker) {
-        // Map Yahoo Finance tickers to TradingView symbols
         const map = {
             'BTC-USD': 'BTCUSD',
             'ETH-USD': 'ETHUSD',
@@ -374,12 +379,13 @@
     }
 
     function isClickable(ticker) {
-        // Treasury yield proxies are clickable via mapped symbols
         const clickable = ['SPY','QQQ','DIA','IWM','XLK','XLE','XLU','XLY','XLI','XLC','XLB','XLF','XLP','XLV',
             'SMH','IGV','IHAK','IYZ','IYT','TAN','XHB','XRT','IBB','IYR',
             'BTC-USD','ETH-USD','SOL-USD','ZEC-USD',
             'VIXY','GLD','TLT','^TNX','^FVX','^IRX',
-            'ADD','ADDQ'];
+            'ADD','ADDQ',
+            'AAPL','MSFT','NVDA','GOOGL','AMZN','META','TSLA','BRK-B','AVGO','JPM','V','WMT','JNJ','XOM',
+            'UNH','MA','PG','HD','LLY','CVX','MRK','PEP','ABBV','COST','TMO'];
         return clickable.includes(ticker);
     }
 
@@ -456,10 +462,19 @@
         if (!state) return rows;
         const { colKey, asc } = state;
         const sorted = [...rows].sort((a, b) => {
-            const av = a[colKey];
-            const bv = b[colKey];
+            let av, bv;
+            if (colKey === '_name') {
+                av = a.ticker;
+                bv = b.ticker;
+            } else {
+                av = a[colKey];
+                bv = b[colKey];
+            }
             if (av === null || av === undefined) return 1;
             if (bv === null || bv === undefined) return -1;
+            if (typeof av === 'string') {
+                return asc ? av.localeCompare(bv) : bv.localeCompare(av);
+            }
             return asc ? av - bv : bv - av;
         });
         return sorted;
@@ -486,32 +501,44 @@
         });
 
         const state = sortState[tableId];
+        const allCols = [{key: '_name', label: 'Name'}, ...cols];
 
         return `
-            <table class="data-table" id="${tableId}">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        ${cols.map(c => {
-                            const isSorted = state && state.colKey === c.key;
-                            const arrow = isSorted ? (state.asc ? '▲' : '▼') : '⇅';
-                            return `<th onclick="sortTable('${tableId}', '${c.key}')" class="${isSorted ? 'sorted' : ''}">${c.label}<span class="sort-arrow">${arrow}</span></th>`;
-                        }).join('')}
-                        <th>Trend</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${sortedRows.map(r => `
+            <div class="table-scroll">
+                <table class="data-table" id="${tableId}">
+                    <thead>
                         <tr>
-                            <td>${tvLink(r.ticker, r.ticker + ': ' + r.name)}</td>
-                            ${cols.map(c => `<td>${renderBar(r[c.key], ranges[c.key])}</td>`).join('')}
-                            <td>${trendText(r)}</td>
+                            ${allCols.map(c => {
+                                const isSorted = state && state.colKey === c.key;
+                                const arrow = isSorted ? (state.asc ? '▲' : '▼') : '⇅';
+                                return `<th onclick="sortTable('${tableId}', '${c.key}')" class="${isSorted ? 'sorted' : ''}">${c.label}<span class="sort-arrow">${arrow}</span></th>`;
+                            }).join('')}
+                            <th>Trend</th>
                         </tr>
-                    `).join('')}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        ${sortedRows.map(r => `
+                            <tr>
+                                <td>${tvLink(r.ticker, r.ticker + ': ' + r.name)}</td>
+                                ${cols.map(c => `<td>${renderBar(r[c.key], ranges[c.key])}</td>`).join('')}
+                                <td>${trendText(r)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
         `;
     }
+
+    window.sortTable = function(tableId, colKey) {
+        const current = sortState[tableId];
+        if (current && current.colKey === colKey) {
+            sortState[tableId] = { colKey, asc: !current.asc };
+        } else {
+            sortState[tableId] = { colKey, asc: false };
+        }
+        renderDashboard();
+    };
 
     window.toggleSection = function(sectionId) {
         const section = document.getElementById(sectionId);
@@ -522,23 +549,13 @@
     };
 
     window.applyCollapsedState = function() {
-        const sections = ['indexes', 'sectors', 'thematic', 'crypto', 'macro', 'advdec'];
+        const sections = ['indexes', 'sectors', 'thematic', 'crypto', 'macro', 'advdec', 'leaders'];
         sections.forEach(id => {
             const section = document.getElementById(id);
             if (section && localStorage.getItem('collapsed-' + id) === '1') {
                 section.classList.add('collapsed');
             }
         });
-    };
-
-    window.sortTable = function(tableId, colKey) {
-        const current = sortState[tableId];
-        if (current && current.colKey === colKey) {
-            sortState[tableId] = { colKey, asc: !current.asc };
-        } else {
-            sortState[tableId] = { colKey, asc: false };
-        }
-        renderDashboard();
     };
 
     window.loadChart = function(symbol, originalTicker) {
@@ -563,6 +580,7 @@
         const macro = snapshot.macro || [];
         const crypto = snapshot.crypto || [];
         const advDec = snapshot.advance_decline || [];
+        const leaders = snapshot.leaders || [];
 
         const offSpread = regime.offense_vs_defense || 0;
         const offText = offSpread > 0 ? 
@@ -570,6 +588,13 @@
             `<span class="theme-laggard">Defense leading (${offSpread.toFixed(2)}%)</span>`;
 
         document.getElementById('header-date').textContent = snapshot.market_date || '';
+
+        // Timestamp
+        const tsEl = document.getElementById('header-timestamp');
+        if (tsEl && snapshot.built_at) {
+            const d = new Date(snapshot.built_at);
+            tsEl.textContent = 'Updated: ' + d.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', timeZoneName: 'short'});
+        }
 
         const html = `
         <div style="display:grid;grid-template-columns:460px 1fr;gap:16px;width:100%;min-width:100%;">
@@ -634,8 +659,8 @@
                     </div>
                 </div>
 
-                <div class="section" id="advdec">
-                    <div class="section-header" onclick="toggleSection('advdec')">Advance Decline<span class="collapse-btn">▼</span></div>
+                <div class="section">
+                    <div class="section-header">Advance Decline</div>
                     <div class="section-body" style="padding:0;">
                         ${renderDataTable(advDec, [
                             {key: 'daily', label: '% Daily'},
@@ -711,7 +736,7 @@
                     <div class="section-header" onclick="toggleSection('indexes')">Major Indexes<span class="collapse-btn">▼</span></div>
                     <div class="section-body" style="padding:0;">
                         ${renderDataTable(
-                            Object.entries(indexes).map(([t, m]) => ({ticker: t, name: m.name || t, ...m})),
+                            Object.entries(indexes).map(([t, m]) => ({ticker: t, name: m.name + ' ($' + fmtPrice(m.close) + ')' || t, ...m})),
                             [
                                 {key: 'daily', label: '% Daily'},
                                 {key: 'p5d', label: '% 5D'},
@@ -719,6 +744,23 @@
                                 {key: 'ytd', label: '% YTD'},
                             ],
                             'indexes'
+                        )}
+                    </div>
+                </div>
+
+                <!-- Liquid Leaders -->
+                <div class="section" id="leaders">
+                    <div class="section-header" onclick="toggleSection('leaders')">Liquid Leaders (Top Gainers)<span class="collapse-btn">▼</span></div>
+                    <div class="section-body" style="padding:0;">
+                        ${renderDataTable(
+                            leaders.filter(l => l.daily > 1.5).sort((a,b) => b.daily - a.daily).slice(0, 10),
+                            [
+                                {key: 'daily', label: '% Daily'},
+                                {key: 'p5d', label: '% 5D'},
+                                {key: 'off_high', label: '% Off High'},
+                                {key: 'ytd', label: '% YTD'},
+                            ],
+                            'leaders'
                         )}
                     </div>
                 </div>
