@@ -67,6 +67,35 @@ ADVANCE_DECLINE = {
     "ADDQ": "Nasdaq Advance-Decline",
 }
 
+# Liquid leaders (top S&P 500 stocks by market cap / volume)
+LEADERS = {
+    "AAPL": "Apple",
+    "MSFT": "Microsoft",
+    "NVDA": "Nvidia",
+    "GOOGL": "Alphabet",
+    "AMZN": "Amazon",
+    "META": "Meta",
+    "TSLA": "Tesla",
+    "BRK-B": "Berkshire Hathaway",
+    "AVGO": "Broadcom",
+    "JPM": "JPMorgan",
+    "V": "Visa",
+    "WMT": "Walmart",
+    "JNJ": "Johnson & Johnson",
+    "XOM": "Exxon Mobil",
+    "UNH": "UnitedHealth",
+    "MA": "Mastercard",
+    "PG": "Procter & Gamble",
+    "HD": "Home Depot",
+    "LLY": "Eli Lilly",
+    "CVX": "Chevron",
+    "MRK": "Merck",
+    "PEP": "PepsiCo",
+    "ABBV": "AbbVie",
+    "COST": "Costco",
+    "TMO": "Thermo Fisher",
+}
+
 # T2108 proxy — % of S&P 500 stocks above 50-day MA (StockCharts symbol)
 # Note: Yahoo Finance may not have this exact symbol; we try multiple variants
 T2108_PROXIES = ["^SPXA50R", "$SPXA50R", "SPXA50R"]
@@ -84,7 +113,7 @@ OFFENSE_TICKERS = ["XLK", "SMH", "IGV"]
 DEFENSE_TICKERS = ["XLU", "XLP", "XLV"]
 
 # All tickers to fetch
-ALL_TICKERS = {**INDEXES, **SECTORS, **THEMATIC, **MACRO, **CRYPTO, **ADVANCE_DECLINE}
+ALL_TICKERS = {**INDEXES, **SECTORS, **THEMATIC, **MACRO, **CRYPTO, **ADVANCE_DECLINE, **LEADERS}
 
 # Sector colors (borrowed from traderwillhu)
 SECTOR_COLORS = {
@@ -261,9 +290,11 @@ def compute_regime(all_metrics):
         regime = "RED"
         playbook = "flat / hedged · no new swing entries · favor short setups"
 
+    # Verify yes_count matches actual true values
+    actual_yes = sum(1 for _, v in checks if v)
     return {
         "checks": checks,
-        "yes_count": yes_count,
+        "yes_count": actual_yes,
         "regime": regime,
         "playbook": playbook,
         "breadth_pct": round(breadth_pct, 1),
@@ -416,6 +447,7 @@ def main():
         "thematic": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in THEMATIC.items() if t in all_metrics],
         "macro": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in MACRO.items() if t in all_metrics],
         "advance_decline": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in ADVANCE_DECLINE.items() if t in all_metrics],
+        "leaders": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in LEADERS.items() if t in all_metrics],
         "crypto": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in CRYPTO.items() if t in all_metrics],
         "t2108_proxy": t2108_proxy,
     }
