@@ -52,6 +52,32 @@
             color: #60a5fa;
             text-transform: uppercase;
             letter-spacing: 0.6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .section-header:hover {
+            background: #334155;
+        }
+        .collapse-btn {
+            font-size: 10pt;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: transform 0.2s;
+        }
+        .collapse-btn:hover {
+            color: #f8fafc;
+            background: #475569;
+        }
+        .section.collapsed .section-body {
+            display: none;
+        }
+        .section.collapsed .collapse-btn {
+            transform: rotate(-90deg);
         }
         .section-body { padding: 8px 12px; }
 
@@ -487,6 +513,24 @@
         `;
     }
 
+    window.toggleSection = function(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (!section) return;
+        section.classList.toggle('collapsed');
+        const isCollapsed = section.classList.contains('collapsed');
+        localStorage.setItem('collapsed-' + sectionId, isCollapsed ? '1' : '0');
+    };
+
+    window.applyCollapsedState = function() {
+        const sections = ['indexes', 'sectors', 'thematic', 'crypto', 'macro', 'advdec'];
+        sections.forEach(id => {
+            const section = document.getElementById(id);
+            if (section && localStorage.getItem('collapsed-' + id) === '1') {
+                section.classList.add('collapsed');
+            }
+        });
+    };
+
     window.sortTable = function(tableId, colKey) {
         const current = sortState[tableId];
         if (current && current.colKey === colKey) {
@@ -590,8 +634,8 @@
                     </div>
                 </div>
 
-                <div class="section">
-                    <div class="section-header">Advance Decline</div>
+                <div class="section" id="advdec">
+                    <div class="section-header" onclick="toggleSection('advdec')">Advance Decline<span class="collapse-btn">▼</span></div>
                     <div class="section-body" style="padding:0;">
                         ${renderDataTable(advDec, [
                             {key: 'daily', label: '% Daily'},
@@ -663,8 +707,8 @@
             <div class="right-col">
 
                 <!-- Major Indexes -->
-                <div class="section">
-                    <div class="section-header">Major Indexes</div>
+                <div class="section" id="indexes">
+                    <div class="section-header" onclick="toggleSection('indexes')">Major Indexes<span class="collapse-btn">▼</span></div>
                     <div class="section-body" style="padding:0;">
                         ${renderDataTable(
                             Object.entries(indexes).map(([t, m]) => ({ticker: t, name: m.name || t, ...m})),
@@ -693,8 +737,8 @@
 
                 <!-- 2x2 Grid: Sectors | Thematic -->
                 <div class="tables-grid">
-                    <div class="section">
-                        <div class="section-header">S&P 500 Sectors</div>
+                    <div class="section" id="sectors">
+                        <div class="section-header" onclick="toggleSection('sectors')">S&P 500 Sectors<span class="collapse-btn">▼</span></div>
                         <div class="section-body" style="padding:0;">
                             ${renderDataTable(sectors, [
                                 {key: 'daily', label: '% Daily'},
@@ -704,8 +748,8 @@
                             ], 'sectors')}
                         </div>
                     </div>
-                    <div class="section">
-                        <div class="section-header">Thematic ETFs</div>
+                    <div class="section" id="thematic">
+                        <div class="section-header" onclick="toggleSection('thematic')">Thematic ETFs<span class="collapse-btn">▼</span></div>
                         <div class="section-body" style="padding:0;">
                             ${renderDataTable(thematic, [
                                 {key: 'daily', label: '% Daily'},
@@ -719,8 +763,8 @@
 
                 <!-- 2x2 Grid: Crypto | Macro -->
                 <div class="tables-grid">
-                    <div class="section">
-                        <div class="section-header">Crypto</div>
+                    <div class="section" id="crypto">
+                        <div class="section-header" onclick="toggleSection('crypto')">Crypto<span class="collapse-btn">▼</span></div>
                         <div class="section-body" style="padding:0;">
                             ${renderDataTable(crypto.map(c => ({...c, name: c.name + ' ($' + fmtPrice(c.close) + ')'})), [
                                 {key: 'daily', label: '% Daily'},
@@ -730,8 +774,8 @@
                             ], 'crypto')}
                         </div>
                     </div>
-                    <div class="section">
-                        <div class="section-header">Macro</div>
+                    <div class="section" id="macro">
+                        <div class="section-header" onclick="toggleSection('macro')">Macro<span class="collapse-btn">▼</span></div>
                         <div class="section-body" style="padding:0;">
                             ${renderDataTable(macro, [
                                 {key: 'daily', label: '% Daily'},
@@ -752,6 +796,7 @@
         updateBreadth();
         updateT2108();
         updateEmotionalAnalysis();
+        applyCollapsedState();
     }
 
     window.updateBreadth = function() {
