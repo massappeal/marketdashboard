@@ -665,25 +665,34 @@
                 <div class="section">
                     <div class="section-header">Advance Decline</div>
                     <div class="section-body">
-                        <div style="font-size:10pt;color:#94a3b8;margin-bottom:4px;">Paste from TradingView:</div>
-                        <div class="breadth-stat">
-                            <span>ADD (NYSE)</span>
-                            <span><input type="number" class="breadth-input" id="add-nyse" value="" placeholder="0" onchange="updateAdvDec()"></span>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                            <div>
+                                <div style="font-size:9pt;color:#94a3b8;margin-bottom:4px;text-align:center;">ADD (NYSE) · 30m</div>
+                                <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=add-chart&symbol=ADD&interval=30&hidesidetoolbar=1&hidetoptoolbar=1&theme=dark&style=3&timezone=America/New_York&withdateranges=0&hideideas=1&hidelegend=1" style="width:100%;height:200px;border:none;background:#0b1120;border-radius:4px;"></iframe>
+                            </div>
+                            <div>
+                                <div style="font-size:9pt;color:#94a3b8;margin-bottom:4px;text-align:center;">ADDQ (Nasdaq) · 30m</div>
+                                <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=addq-chart&symbol=ADDQ&interval=30&hidesidetoolbar=1&hidetoptoolbar=1&theme=dark&style=3&timezone=America/New_York&withdateranges=0&hideideas=1&hidelegend=1" style="width:100%;height:200px;border:none;background:#0b1120;border-radius:4px;"></iframe>
+                            </div>
                         </div>
-                        <div class="breadth-stat">
-                            <span>ADDQ (Nasdaq)</span>
-                            <span><input type="number" class="breadth-input" id="add-qqq" value="" placeholder="0" onchange="updateAdvDec()"></span>
-                        </div>
-                        <div class="breadth-stat" style="margin-top:4px;">
-                            <span>Net A/D</span>
-                            <span id="add-net" class="neutral">--</span>
-                        </div>
-                        <div class="breadth-stat">
-                            <span>Trend</span>
-                            <span id="add-trend" class="neutral">--</span>
-                        </div>
-                        <div style="margin-top:3px;font-size:9pt;color:#64748b;">
-                            Positive = more advancers · Negative = more decliners
+                        <div style="border-top:1px solid #334155;padding-top:8px;">
+                            <div style="font-size:9pt;color:#94a3b8;margin-bottom:4px;">Manual input (paste from TV):</div>
+                            <div class="breadth-stat">
+                                <span>ADD (NYSE)</span>
+                                <span><input type="number" class="breadth-input" id="add-nyse" value="" placeholder="0" onchange="updateAdvDec()"></span>
+                            </div>
+                            <div class="breadth-stat">
+                                <span>ADDQ (Nasdaq)</span>
+                                <span><input type="number" class="breadth-input" id="add-qqq" value="" placeholder="0" onchange="updateAdvDec()"></span>
+                            </div>
+                            <div class="breadth-stat" style="margin-top:4px;">
+                                <span>Net A/D</span>
+                                <span id="add-net" class="neutral">--</span>
+                            </div>
+                            <div class="breadth-stat">
+                                <span>Trend</span>
+                                <span id="add-trend" class="neutral">--</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -981,7 +990,8 @@ ${(() => {
     }
 
     function loadData() {
-        fetch('data/snapshot.json')
+        // Cache-bust to always get fresh data after workflow runs
+        fetch('data/snapshot.json?t=' + Date.now())
             .then(r => r.ok ? r.json() : null)
             .then(data => {
                 if (data) {
