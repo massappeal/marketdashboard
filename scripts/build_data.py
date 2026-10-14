@@ -61,12 +61,6 @@ MACRO = {
     "^IRX": "2-Yr Yield",
 }
 
-# Advance Decline
-ADVANCE_DECLINE = {
-    "ADD": "NYSE Advance-Decline",
-    "ADDQ": "Nasdaq Advance-Decline",
-}
-
 # Liquid leaders (top S&P 500 stocks by market cap / volume)
 LEADERS = {
     "AAPL": "Apple",
@@ -113,7 +107,7 @@ OFFENSE_TICKERS = ["XLK", "SMH", "IGV"]
 DEFENSE_TICKERS = ["XLU", "XLP", "XLV"]
 
 # All tickers to fetch
-ALL_TICKERS = {**INDEXES, **SECTORS, **THEMATIC, **MACRO, **CRYPTO, **ADVANCE_DECLINE, **LEADERS}
+ALL_TICKERS = {**INDEXES, **SECTORS, **THEMATIC, **MACRO, **CRYPTO, **LEADERS}
 
 # Sector colors (borrowed from traderwillhu)
 SECTOR_COLORS = {
@@ -446,7 +440,6 @@ def main():
         "sectors": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in SECTORS.items() if t in all_metrics],
         "thematic": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in THEMATIC.items() if t in all_metrics],
         "macro": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in MACRO.items() if t in all_metrics],
-        "advance_decline": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in ADVANCE_DECLINE.items() if t in all_metrics],
         "leaders": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in LEADERS.items() if t in all_metrics],
         "crypto": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in CRYPTO.items() if t in all_metrics],
         "t2108_proxy": t2108_proxy,
