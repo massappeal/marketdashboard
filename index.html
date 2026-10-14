@@ -663,6 +663,32 @@
                 </div>
 
                 <div class="section">
+                    <div class="section-header">Advance Decline</div>
+                    <div class="section-body">
+                        <div style="font-size:10pt;color:#94a3b8;margin-bottom:4px;">Paste from TradingView:</div>
+                        <div class="breadth-stat">
+                            <span>ADD (NYSE)</span>
+                            <span><input type="number" class="breadth-input" id="add-nyse" value="" placeholder="0" onchange="updateAdvDec()"></span>
+                        </div>
+                        <div class="breadth-stat">
+                            <span>ADDQ (Nasdaq)</span>
+                            <span><input type="number" class="breadth-input" id="add-qqq" value="" placeholder="0" onchange="updateAdvDec()"></span>
+                        </div>
+                        <div class="breadth-stat" style="margin-top:4px;">
+                            <span>Net A/D</span>
+                            <span id="add-net" class="neutral">--</span>
+                        </div>
+                        <div class="breadth-stat">
+                            <span>Trend</span>
+                            <span id="add-trend" class="neutral">--</span>
+                        </div>
+                        <div style="margin-top:3px;font-size:9pt;color:#64748b;">
+                            Positive = more advancers · Negative = more decliners
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
                     <div class="section-header">T2108 / % Above 40DSMA</div>
                     <div class="section-body">
                         <div style="font-size:10pt;color:#94a3b8;margin-bottom:4px;">
@@ -831,6 +857,7 @@ ${(() => {
         document.getElementById('main-content').innerHTML = html;
 
         updateBreadth();
+        updateAdvDec();
         updateT2108();
         updateEmotionalAnalysis();
         applyCollapsedState();
@@ -857,6 +884,31 @@ ${(() => {
         if (trendEl) {
             trendEl.textContent = net >= 0 ? 'EXPANDING' : 'CONTRACTING';
             trendEl.className = net >= 0 ? 'nh-nl-expanding' : 'nh-nl-contracting';
+        }
+    };
+
+    window.updateAdvDec = function() {
+        const nyse = parseFloat(document.getElementById('add-nyse')?.value);
+        const qqq = parseFloat(document.getElementById('add-qqq')?.value);
+        const netEl = document.getElementById('add-net');
+        const trendEl = document.getElementById('add-trend');
+
+        if (isNaN(nyse) && isNaN(qqq)) {
+            if (netEl) netEl.textContent = '--';
+            if (trendEl) { trendEl.textContent = '--'; trendEl.className = 'neutral'; }
+            return;
+        }
+
+        const net = (isNaN(nyse) ? 0 : nyse) + (isNaN(qqq) ? 0 : qqq);
+
+        if (netEl) {
+            netEl.textContent = (net >= 0 ? '+' : '') + net.toFixed(0);
+            netEl.className = net >= 0 ? 'pos' : 'neg';
+        }
+        if (trendEl) {
+            if (net > 0) { trendEl.textContent = 'EXPANDING'; trendEl.className = 'nh-nl-expanding'; }
+            else if (net < 0) { trendEl.textContent = 'CONTRACTING'; trendEl.className = 'nh-nl-contracting'; }
+            else { trendEl.textContent = 'NEUTRAL'; trendEl.className = 'neutral'; }
         }
     };
 
