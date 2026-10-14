@@ -552,7 +552,7 @@
     };
 
     window.applyCollapsedState = function() {
-        const sections = ['indexes', 'sectors', 'thematic', 'crypto', 'macro', 'advdec', 'leaders'];
+        const sections = ['indexes', 'sectors', 'thematic', 'crypto', 'macro', 'leaders'];
         sections.forEach(id => {
             const section = document.getElementById(id);
             if (section && localStorage.getItem('collapsed-' + id) === '1') {
@@ -582,7 +582,7 @@
         const thematic = snapshot.thematic || [];
         const macro = snapshot.macro || [];
         const crypto = snapshot.crypto || [];
-        const advDec = snapshot.advance_decline || [];
+        
         const leaders = snapshot.leaders || [];
 
         const offSpread = regime.offense_vs_defense || 0;
@@ -659,18 +659,6 @@
                             <span>Highs > Lows?</span>
                             <span id="nh-nl-winner" class="trend-no">--</span>
                         </div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-header">Advance Decline</div>
-                    <div class="section-body" style="padding:0;">
-                        ${renderDataTable(advDec, [
-                            {key: 'daily', label: '% Daily'},
-                            {key: 'p5d', label: '% 5D'},
-                            {key: 'off_high', label: '% Off High'},
-                            {key: 'ytd', label: '% YTD'},
-                        ], 'advdec')}
                     </div>
                 </div>
 
