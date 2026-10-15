@@ -687,7 +687,7 @@
                 <div class="section">
                     <div class="section-header">Advance Decline</div>
                     <div class="section-body">
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                             <div>
                                 <div style="font-size:9pt;color:#94a3b8;margin-bottom:4px;text-align:center;">ADD (NYSE) · 1H</div>
                                 <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=add-chart&symbol=ADD&interval=60&hidesidetoolbar=1&hidetoptoolbar=1&theme=dark&style=3&timezone=America/New_York&withdateranges=0&hideideas=1&hidelegend=1" style="width:100%;height:200px;border:none;background:#0b1120;border-radius:4px;"></iframe>
@@ -695,25 +695,6 @@
                             <div>
                                 <div style="font-size:9pt;color:#94a3b8;margin-bottom:4px;text-align:center;">ADDQ (Nasdaq) · 1H</div>
                                 <iframe src="https://www.tradingview.com/widgetembed/?frameElementId=addq-chart&symbol=ADDQ&interval=60&hidesidetoolbar=1&hidetoptoolbar=1&theme=dark&style=3&timezone=America/New_York&withdateranges=0&hideideas=1&hidelegend=1" style="width:100%;height:200px;border:none;background:#0b1120;border-radius:4px;"></iframe>
-                            </div>
-                        </div>
-                        <div style="border-top:1px solid #334155;padding-top:8px;">
-                            <div style="font-size:9pt;color:#94a3b8;margin-bottom:4px;">Manual input (paste from TV):</div>
-                            <div class="breadth-stat">
-                                <span>ADD (NYSE)</span>
-                                <span><input type="number" class="breadth-input" id="add-nyse" value="" placeholder="0" onchange="updateAdvDec()"></span>
-                            </div>
-                            <div class="breadth-stat">
-                                <span>ADDQ (Nasdaq)</span>
-                                <span><input type="number" class="breadth-input" id="add-qqq" value="" placeholder="0" onchange="updateAdvDec()"></span>
-                            </div>
-                            <div class="breadth-stat" style="margin-top:4px;">
-                                <span>Net A/D</span>
-                                <span id="add-net" class="neutral">--</span>
-                            </div>
-                            <div class="breadth-stat">
-                                <span>Trend</span>
-                                <span id="add-trend" class="neutral">--</span>
                             </div>
                         </div>
                     </div>
@@ -892,7 +873,6 @@ ${(() => {
         document.getElementById('main-content').innerHTML = html;
 
         updateBreadth();
-        updateAdvDec();
         updateT2108();
         updateEmotionalAnalysis();
         applyCollapsedState();
@@ -931,31 +911,6 @@ ${(() => {
                 {key: 'lows', label: 'Lows'},
                 {key: 'net', label: 'Net', colorFn: (v) => v >= 0 ? 'color:#22c55e;' : 'color:#ef4444;'}
             ], 'breadth-history');
-        }
-    };
-
-    window.updateAdvDec = function() {
-        const nyse = parseFloat(document.getElementById('add-nyse')?.value);
-        const qqq = parseFloat(document.getElementById('add-qqq')?.value);
-        const netEl = document.getElementById('add-net');
-        const trendEl = document.getElementById('add-trend');
-
-        if (isNaN(nyse) && isNaN(qqq)) {
-            if (netEl) netEl.textContent = '--';
-            if (trendEl) { trendEl.textContent = '--'; trendEl.className = 'neutral'; }
-            return;
-        }
-
-        const net = (isNaN(nyse) ? 0 : nyse) + (isNaN(qqq) ? 0 : qqq);
-
-        if (netEl) {
-            netEl.textContent = (net >= 0 ? '+' : '') + net.toFixed(0);
-            netEl.className = net >= 0 ? 'pos' : 'neg';
-        }
-        if (trendEl) {
-            if (net > 0) { trendEl.textContent = 'EXPANDING'; trendEl.className = 'nh-nl-expanding'; }
-            else if (net < 0) { trendEl.textContent = 'CONTRACTING'; trendEl.className = 'nh-nl-contracting'; }
-            else { trendEl.textContent = 'NEUTRAL'; trendEl.className = 'neutral'; }
         }
     };
 
@@ -1005,8 +960,12 @@ ${(() => {
     function saveT2108History(a, b, t2108) {
         const key = 't2108_history';
         let history = JSON.parse(localStorage.getItem(key) || '[]');
+        const today = new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+        // Remove any existing entry for today
+        history = history.filter(h => h.date !== today);
+        // Add new entry for today
         history.unshift({
-            date: new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric'}),
+            date: today,
             time: new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'}),
             a: a,
             b: b,
@@ -1019,8 +978,12 @@ ${(() => {
     function saveBreadthHistory(highs, lows, net) {
         const key = 'breadth_history';
         let history = JSON.parse(localStorage.getItem(key) || '[]');
+        const today = new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+        // Remove any existing entry for today
+        history = history.filter(h => h.date !== today);
+        // Add new entry for today
         history.unshift({
-            date: new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric'}),
+            date: today,
             time: new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'}),
             highs: highs,
             lows: lows,
@@ -1094,8 +1057,25 @@ ${(() => {
     }
 
     function loadData() {
-        // Cache-bust to always get fresh data after workflow runs
-        fetch('data/snapshot.json?t=' + Date.now())
+        // Step 1: Get reference to latest snapshot filename
+        fetch('data/snapshot_ref.json?t=' + Date.now())
+            .then(r => r.ok ? r.json() : null)
+            .then(ref => {
+                if (!ref || !ref.filename) {
+                    // Fallback to old filename for backward compatibility
+                    return fetchSnapshot('data/snapshot.json');
+                }
+                // Step 2: Fetch the specific snapshot file (unique filename = no CDN cache)
+                return fetchSnapshot('data/' + ref.filename);
+            })
+            .catch(err => {
+                // Fallback
+                fetchSnapshot('data/snapshot.json');
+            });
+    }
+
+    function fetchSnapshot(url) {
+        fetch(url)
             .then(r => r.ok ? r.json() : null)
             .then(data => {
                 if (data) {
