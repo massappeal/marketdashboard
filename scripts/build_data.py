@@ -210,38 +210,51 @@ def compute_metrics(hist):
 
 def compute_regime(all_metrics):
     """Compute the 6-check market regime."""
+    print("\n=== COMPUTE REGIME DEBUG ===")
+
     spy = all_metrics.get("SPY")
     qqq = all_metrics.get("QQQ")
+
+    print(f"SPY available: {spy is not None}")
+    print(f"QQQ available: {qqq is not None}")
+    if spy:
+        print(f"  SPY above_ema20={spy['above_ema20']}, above_sma50={spy['above_sma50']}, ema20={spy['ema20']}, sma50={spy['sma50']}")
+    if qqq:
+        print(f"  QQQ above_ema20={qqq['above_ema20']}, above_sma50={qqq['above_sma50']}")
 
     checks = []
 
     # 1. SPY vs 20 EMA / 50 SMA
     if spy:
-        c1 = spy["above_ema20"] and spy["above_sma50"]
-        checks.append(("SPY vs 20 EMA / 50 SMA", c1))
+        c1 = bool(spy["above_ema20"] and spy["above_sma50"])
     else:
-        checks.append(("SPY vs 20 EMA / 50 SMA", False))
+        c1 = False
+    checks.append(["SPY vs 20 EMA / 50 SMA", c1])
+    print(f"Check 1 (SPY vs MAs): {c1}")
 
     # 2. QQQ vs 20 EMA / 50 SMA
     if qqq:
-        c2 = qqq["above_ema20"] and qqq["above_sma50"]
-        checks.append(("QQQ vs 20 EMA / 50 SMA", c2))
+        c2 = bool(qqq["above_ema20"] and qqq["above_sma50"])
     else:
-        checks.append(("QQQ vs 20 EMA / 50 SMA", False))
+        c2 = False
+    checks.append(["QQQ vs 20 EMA / 50 SMA", c2])
+    print(f"Check 2 (QQQ vs MAs): {c2}")
 
     # 3. SPY trend: 20 EMA above 50 SMA
     if spy:
-        c3 = spy["ema20"] > spy["sma50"]
-        checks.append(("SPY trend: 20 EMA above 50 SMA", c3))
+        c3 = bool(spy["ema20"] > spy["sma50"])
     else:
-        checks.append(("SPY trend: 20 EMA above 50 SMA", False))
+        c3 = False
+    checks.append(["SPY trend: 20 EMA above 50 SMA", c3])
+    print(f"Check 3 (SPY trend): {c3}")
 
     # 4. Breadth: 50%+ of tracked ETFs above both
     tracked = list(SECTORS.keys()) + list(THEMATIC.keys())
     above_both = sum(1 for t in tracked if t in all_metrics and all_metrics[t]["above_ema20"] and all_metrics[t]["above_sma50"])
     breadth_pct = (above_both / len(tracked)) * 100 if tracked else 0
-    c4 = breadth_pct >= 50
-    checks.append(("Breadth: 50%+ above both", c4))
+    c4 = bool(breadth_pct >= 50)
+    checks.append(["Breadth: 50%+ above both", c4])
+    print(f"Check 4 (Breadth): {c4} ({above_both}/{len(tracked)} = {breadth_pct:.1f}%)")
 
     # 5. Offense vs Defense (5D)
     offense_5d = []
@@ -256,8 +269,12 @@ def compute_regime(all_metrics):
     off_avg = sum(offense_5d) / len(offense_5d) if offense_5d else 0
     def_avg = sum(defense_5d) / len(defense_5d) if defense_5d else 0
     spread = off_avg - def_avg
-    c5 = spread > 0
-    checks.append(("Offense vs Defense (5D)", c5))
+    c5 = bool(spread > 0)
+    checks.append(["Offense vs Defense (5D)", c5])
+    print(f"Check 5 (Offense vs Defense): {c5}")
+    print(f"  Offense: {offense_5d} avg={off_avg:.2f}")
+    print(f"  Defense: {defense_5d} avg={def_avg:.2f}")
+    print(f"  Spread: {spread:.2f}")
 
     # 6. VIX below 5-day ago (placeholder - uses VIXY as proxy)
     vix = all_metrics.get("VIXY")
@@ -265,14 +282,21 @@ def compute_regime(all_metrics):
         try:
             vix_now = vix["close"]
             vix_5d = vix["hist"]["Close"].iloc[-6]
-            c6 = vix_now < vix_5d
-        except:
+            c6 = bool(vix_now < vix_5d)
+            print(f"  VIXY close={vix_now}, 5d ago={vix_5d}")
+        except Exception as e:
+            print(f"  VIXY error: {e}")
             c6 = True
     else:
+        print(f"  VIXY not available, defaulting to True")
         c6 = True
-    checks.append(("VIX below 5D ago", c6))
+    checks.append(["VIX below 5D ago", c6])
+    print(f"Check 6 (VIX): {c6}")
 
+    # Count YES
     yes_count = sum(1 for _, v in checks if v)
+    print(f"\nYES count from checks: {yes_count}")
+    print(f"Checks: {checks}")
 
     if yes_count >= 5:
         regime = "GREEN"
@@ -284,11 +308,12 @@ def compute_regime(all_metrics):
         regime = "RED"
         playbook = "flat / hedged · no new swing entries · favor short setups"
 
-    # Verify yes_count matches actual true values
-    actual_yes = sum(1 for _, v in checks if v)
+    print(f"Regime: {regime} ({yes_count}/6)")
+    print("=== END REGIME DEBUG ===\n")
+
     return {
         "checks": checks,
-        "yes_count": actual_yes,
+        "yes_count": yes_count,
         "regime": regime,
         "playbook": playbook,
         "breadth_pct": round(breadth_pct, 1),
