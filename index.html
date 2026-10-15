@@ -616,6 +616,18 @@
                     <div class="section-body">
                         ${renderTrendChecks(regime.checks || [], regime.yes_count || 0)}
                         ${renderRegime(regime)}
+                        ${(() => {
+                            const checks = regime.checks || [];
+                            const actualYes = checks.filter(([_, v]) => v).length;
+                            const statedYes = regime.yes_count || 0;
+                            if (actualYes !== statedYes) {
+                                return `<div style="margin-top:8px;padding:6px;background:#7f1d1d;border-radius:4px;font-size:9pt;color:#fca5a5;">
+                                    ⚠️ Data mismatch: checks show ${actualYes} YES but score says ${statedYes}. 
+                                    Please report this bug.
+                                </div>`;
+                            }
+                            return '';
+                        })()}
                     </div>
                 </div>
 
@@ -664,6 +676,10 @@
                         <div class="breadth-stat">
                             <span>Highs > Lows?</span>
                             <span id="nh-nl-winner" class="trend-no">--</span>
+                        </div>
+                        <div style="margin-top:8px;border-top:1px solid #334155;padding-top:6px;">
+                            <div style="font-size:9pt;color:#94a3b8;margin-bottom:3px;"><strong>History (last 10):</strong></div>
+                            <div id="breadth-history"></div>
                         </div>
                     </div>
                 </div>
@@ -730,6 +746,10 @@
                             </div>
                             <div style="margin-top:3px;font-size:9pt;color:#64748b;">
                                 &lt;20% = Oversold · 20-70% = Neutral · &gt;70% = Overbought
+                            </div>
+                            <div style="margin-top:8px;border-top:1px solid #334155;padding-top:6px;">
+                                <div style="font-size:9pt;color:#94a3b8;margin-bottom:3px;"><strong>History (last 10):</strong></div>
+                                <div id="t2108-history"></div>
                             </div>
                         </div>
                     </div>
@@ -900,6 +920,18 @@ ${(() => {
             trendEl.textContent = net >= 0 ? 'EXPANDING' : 'CONTRACTING';
             trendEl.className = net >= 0 ? 'nh-nl-expanding' : 'nh-nl-contracting';
         }
+
+        // Save to history
+        saveBreadthHistory(highs, lows, net);
+        const histEl = document.getElementById('breadth-history');
+        if (histEl) {
+            const history = JSON.parse(localStorage.getItem('breadth_history') || '[]');
+            histEl.innerHTML = renderHistoryTable(history, [
+                {key: 'highs', label: 'Highs'},
+                {key: 'lows', label: 'Lows'},
+                {key: 'net', label: 'Net', colorFn: (v) => v >= 0 ? 'color:#22c55e;' : 'color:#ef4444;'}
+            ], 'breadth-history');
+        }
     };
 
     window.updateAdvDec = function() {
@@ -954,7 +986,73 @@ ${(() => {
             else if (t2108 <= 20) { condEl.textContent = 'OVERSOLD'; condEl.style.color = '#ef4444'; }
             else { condEl.textContent = 'NEUTRAL'; condEl.style.color = '#f59e0b'; }
         }
+
+        // Save to history
+        saveT2108History(a, b, parseFloat(val));
+        const histEl = document.getElementById('t2108-history');
+        if (histEl) {
+            const history = JSON.parse(localStorage.getItem('t2108_history') || '[]');
+            histEl.innerHTML = renderHistoryTable(history, [
+                {key: 'a', label: 'A'},
+                {key: 'b', label: 'B'},
+                {key: 't2108', label: 'T2108', colorFn: (v) => v >= 70 ? 'color:#22c55e;' : v <= 20 ? 'color:#ef4444;' : 'color:#f59e0b;'}
+            ], 't2108-history');
+        }
     };
+
+    // ─── HISTORY FUNCTIONS ─────────────────────────────────────────
+
+    function saveT2108History(a, b, t2108) {
+        const key = 't2108_history';
+        let history = JSON.parse(localStorage.getItem(key) || '[]');
+        history.unshift({
+            date: new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric'}),
+            time: new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'}),
+            a: a,
+            b: b,
+            t2108: t2108
+        });
+        history = history.slice(0, 20);
+        localStorage.setItem(key, JSON.stringify(history));
+    }
+
+    function saveBreadthHistory(highs, lows, net) {
+        const key = 'breadth_history';
+        let history = JSON.parse(localStorage.getItem(key) || '[]');
+        history.unshift({
+            date: new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric'}),
+            time: new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'}),
+            highs: highs,
+            lows: lows,
+            net: net
+        });
+        history = history.slice(0, 20);
+        localStorage.setItem(key, JSON.stringify(history));
+    }
+
+    function renderHistoryTable(history, columns, containerId) {
+        if (!history || history.length === 0) {
+            return '<div style="font-size:9pt;color:#64748b;padding:4px;">No history yet.</div>';
+        }
+        return `
+            <table style="width:100%;font-size:9pt;border-collapse:collapse;margin-top:6px;">
+                <thead>
+                    <tr style="color:#94a3b8;border-bottom:1px solid #334155;">
+                        <th style="text-align:left;padding:2px 4px;">Date</th>
+                        ${columns.map(c => `<th style="text-align:right;padding:2px 4px;">${c.label}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+                    ${history.slice(0, 10).map(h => `
+                        <tr style="border-bottom:1px solid #1e293b;">
+                            <td style="padding:2px 4px;color:#94a3b8;">${h.date} ${h.time}</td>
+                            ${columns.map(c => `<td style="text-align:right;padding:2px 4px;${c.colorFn ? c.colorFn(h[c.key]) : ''}">${h[c.key]}</td>`).join('')}
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
 
     function updateEmotionalAnalysis() {
         if (!snapshot) return;
