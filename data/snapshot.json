@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-10-15T04:48:35.148123Z",
+  "built_at": "2026-10-15T05:17:33.408549Z",
   "market_date": "October 15, 2026",
   "regime": {
     "checks": [
@@ -13,7 +13,7 @@
       ],
       [
         "SPY trend: 20 EMA above 50 SMA",
-        "True"
+        true
       ],
       [
         "Breadth: 50%+ above both",
@@ -21,11 +21,11 @@
       ],
       [
         "Offense vs Defense (5D)",
-        "False"
+        false
       ],
       [
         "VIX below 5D ago",
-        "False"
+        false
       ]
     ],
     "yes_count": 1,
@@ -940,31 +940,31 @@
     {
       "ticker": "BTC-USD",
       "name": "Bitcoin",
-      "close": 81519.19,
-      "daily": -1.9,
-      "intra": -0.07,
-      "p5d": -1.24,
-      "p20d": -3.39,
-      "ytd": -8.13,
-      "off_high": -28.79,
-      "ema20": 82959.14,
-      "sma50": 81163.85,
+      "close": 81078.43,
+      "daily": -2.43,
+      "intra": -0.61,
+      "p5d": -1.78,
+      "p20d": -3.91,
+      "ytd": -8.63,
+      "off_high": -29.17,
+      "ema20": 82917.16,
+      "sma50": 81155.03,
       "above_ema20": false,
-      "above_sma50": true,
+      "above_sma50": false,
       "abc": "B"
     },
     {
       "ticker": "ETH-USD",
       "name": "Ethereum",
-      "close": 2380.27,
-      "daily": -4.66,
-      "intra": -1.58,
-      "p5d": -4.24,
-      "p20d": -11.43,
-      "ytd": -20.67,
-      "off_high": -42.75,
-      "ema20": 2557.67,
-      "sma50": 2554.82,
+      "close": 2362.56,
+      "daily": -5.37,
+      "intra": -2.31,
+      "p5d": -4.95,
+      "p20d": -12.08,
+      "ytd": -21.26,
+      "off_high": -43.18,
+      "ema20": 2555.99,
+      "sma50": 2554.46,
       "above_ema20": false,
       "above_sma50": false,
       "abc": "B"
@@ -972,15 +972,15 @@
     {
       "ticker": "SOL-USD",
       "name": "Solana",
-      "close": 104.03,
-      "daily": -2.53,
-      "intra": -0.06,
-      "p5d": -4.68,
-      "p20d": -11.09,
-      "ytd": -17.93,
-      "off_high": -47.99,
-      "ema20": 111.93,
-      "sma50": 109.4,
+      "close": 102.47,
+      "daily": -3.99,
+      "intra": -1.56,
+      "p5d": -6.11,
+      "p20d": -12.43,
+      "ytd": -19.16,
+      "off_high": -48.77,
+      "ema20": 111.78,
+      "sma50": 109.37,
       "above_ema20": false,
       "above_sma50": false,
       "abc": "B"
@@ -988,15 +988,15 @@
     {
       "ticker": "ZEC-USD",
       "name": "Zcash",
-      "close": 1114.23,
-      "daily": -8.49,
-      "intra": -2.71,
-      "p5d": -7.73,
-      "p20d": -27.91,
-      "ytd": 112.25,
-      "off_high": -32.49,
-      "ema20": 1279.8,
-      "sma50": 1228.26,
+      "close": 1100.83,
+      "daily": -9.59,
+      "intra": -3.88,
+      "p5d": -8.84,
+      "p20d": -28.77,
+      "ytd": 109.7,
+      "off_high": -33.3,
+      "ema20": 1278.53,
+      "sma50": 1228.0,
       "above_ema20": false,
       "above_sma50": false,
       "abc": "B"
