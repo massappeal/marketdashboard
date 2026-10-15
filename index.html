@@ -1095,6 +1095,33 @@ ${(() => {
     // Expose snapshot for console debugging
     window.getSnapshot = function() { return snapshot; };
 
+    // Render history tables on initial load
+    function renderHistoryOnLoad() {
+        // T2108 history
+        const t2108HistEl = document.getElementById('t2108-history');
+        if (t2108HistEl) {
+            const history = JSON.parse(localStorage.getItem('t2108_history') || '[]');
+            t2108HistEl.innerHTML = renderHistoryTable(history, [
+                {key: 'a', label: 'A'},
+                {key: 'b', label: 'B'},
+                {key: 't2108', label: 'T2108', colorFn: (v) => v >= 70 ? 'color:#22c55e;' : v <= 20 ? 'color:#ef4444;' : 'color:#f59e0b;'}
+            ], 't2108-history');
+        }
+        // Breadth history
+        const breadthHistEl = document.getElementById('breadth-history');
+        if (breadthHistEl) {
+            const history = JSON.parse(localStorage.getItem('breadth_history') || '[]');
+            breadthHistEl.innerHTML = renderHistoryTable(history, [
+                {key: 'highs', label: 'Highs'},
+                {key: 'lows', label: 'Lows'},
+                {key: 'net', label: 'Net', colorFn: (v) => v >= 0 ? 'color:#22c55e;' : 'color:#ef4444;'}
+            ], 'breadth-history');
+        }
+    }
+
+    // Call after a short delay to ensure DOM is ready
+    setTimeout(renderHistoryOnLoad, 500);
+
     loadData();
 })();
 </script>
