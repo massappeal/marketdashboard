@@ -319,6 +319,7 @@
             <div class="header-title">Daily Market Recap</div>
             <div class="header-date" id="header-date">Loading...</div>
             <div class="header-timestamp" id="header-timestamp"></div>
+        <div class="header-timestamp" id="data-freshness" style="font-size:8pt;color:#64748b;"></div>
         </div>
         <div class="header-right">
             <div class="header-proverb">"Plan your trade and trade your plan."</div>
@@ -594,9 +595,14 @@
 
         // Timestamp
         const tsEl = document.getElementById('header-timestamp');
+        const freshEl = document.getElementById('data-freshness');
         if (tsEl && snapshot.built_at) {
             const d = new Date(snapshot.built_at);
             tsEl.textContent = 'Updated: ' + d.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', timeZoneName: 'short'});
+            if (freshEl) {
+                const minsAgo = Math.round((Date.now() - d.getTime()) / 60000);
+                freshEl.textContent = minsAgo < 60 ? `(${minsAgo}m ago)` : `(${Math.round(minsAgo/60)}h ago)`;
+            }
         }
 
         const html = `
@@ -1007,6 +1013,9 @@ ${(() => {
                     '<div class="loading">Error loading data. Make sure data/snapshot.json exists.</div>';
             });
     }
+
+    // Expose snapshot for console debugging
+    window.getSnapshot = function() { return snapshot; };
 
     loadData();
 })();
