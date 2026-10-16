@@ -872,15 +872,27 @@ ${(() => {
 
         document.getElementById('main-content').innerHTML = html;
 
+        restoreManualInputs();
         updateBreadth();
         updateT2108();
         updateEmotionalAnalysis();
         applyCollapsedState();
+        renderHistoryOnLoad();
     }
 
     window.updateBreadth = function() {
-        const highs = parseInt(document.getElementById('new-highs')?.value || 0);
-        const lows = parseInt(document.getElementById('new-lows')?.value || 0);
+        const highs = parseInt(document.getElementById('new-highs')?.value);
+        const lows = parseInt(document.getElementById('new-lows')?.value);
+
+        // Guard: skip when inputs are empty (page load / re-renders), so a
+        // bogus 0/0 entry can't clobber today's saved NH-NL history.
+        if (isNaN(highs) || isNaN(lows)) {
+            const netEl0 = document.getElementById('nh-nl-net');
+            const winnerEl0 = document.getElementById('nh-nl-winner');
+            if (netEl0) { netEl0.textContent = '--'; netEl0.className = 'neutral'; }
+            if (winnerEl0) { winnerEl0.textContent = '--'; winnerEl0.className = 'neutral'; }
+            return;
+        }
         const net = highs - lows;
         const ratio = lows > 0 ? (highs / lows).toFixed(2) : 'N/A';
 
@@ -1095,6 +1107,24 @@ ${(() => {
     // Expose snapshot for console debugging
     window.getSnapshot = function() { return snapshot; };
 
+    // Restore manually entered values (NH-NL, T2108) from today's history
+    function restoreManualInputs() {
+        const bHist = JSON.parse(localStorage.getItem('breadth_history') || '[]');
+        if (bHist[0] && (bHist[0].highs || bHist[0].lows)) {
+            const hEl = document.getElementById('new-highs');
+            const lEl = document.getElementById('new-lows');
+            if (hEl) hEl.value = bHist[0].highs;
+            if (lEl) lEl.value = bHist[0].lows;
+        }
+        const tHist = JSON.parse(localStorage.getItem('t2108_history') || '[]');
+        if (tHist[0] && (tHist[0].a || tHist[0].b)) {
+            const aEl = document.getElementById('t2108-a');
+            const bEl = document.getElementById('t2108-b');
+            if (aEl) aEl.value = tHist[0].a;
+            if (bEl) bEl.value = tHist[0].b;
+        }
+    }
+
     // Render history tables on initial load
     function renderHistoryOnLoad() {
         // T2108 history
@@ -1118,9 +1148,6 @@ ${(() => {
             ], 'breadth-history');
         }
     }
-
-    // Call after a short delay to ensure DOM is ready
-    setTimeout(renderHistoryOnLoad, 500);
 
     loadData();
 })();
