@@ -880,6 +880,16 @@ ${(() => {
         renderHistoryOnLoad();
     }
 
+    // ─── MARKET CALENDAR HELPERS ─────────────────────────────────────
+    function todayStr() {
+        return new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+    }
+
+    function isMarketDay() {
+        const day = new Date().getDay(); // 0 = Sun, 6 = Sat
+        return day !== 0 && day !== 6;
+    }
+
     window.updateBreadth = function() {
         const highs = parseInt(document.getElementById('new-highs')?.value);
         const lows = parseInt(document.getElementById('new-lows')?.value);
@@ -970,6 +980,7 @@ ${(() => {
     // ─── HISTORY FUNCTIONS ─────────────────────────────────────────
 
     function saveT2108History(a, b, t2108) {
+        if (!isMarketDay()) return; // no entries on weekends
         const key = 't2108_history';
         let history = JSON.parse(localStorage.getItem(key) || '[]');
         const today = new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
@@ -988,6 +999,7 @@ ${(() => {
     }
 
     function saveBreadthHistory(highs, lows, net) {
+        if (!isMarketDay()) return; // no entries on weekends
         const key = 'breadth_history';
         let history = JSON.parse(localStorage.getItem(key) || '[]');
         const today = new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
@@ -1109,15 +1121,17 @@ ${(() => {
 
     // Restore manually entered values (NH-NL, T2108) from today's history
     function restoreManualInputs() {
+        const today = todayStr();
+        // Only restore values saved TODAY — never carry yesterday's data forward
         const bHist = JSON.parse(localStorage.getItem('breadth_history') || '[]');
-        if (bHist[0] && (bHist[0].highs || bHist[0].lows)) {
+        if (bHist[0] && bHist[0].date === today && (bHist[0].highs || bHist[0].lows)) {
             const hEl = document.getElementById('new-highs');
             const lEl = document.getElementById('new-lows');
             if (hEl) hEl.value = bHist[0].highs;
             if (lEl) lEl.value = bHist[0].lows;
         }
         const tHist = JSON.parse(localStorage.getItem('t2108_history') || '[]');
-        if (tHist[0] && (tHist[0].a || tHist[0].b)) {
+        if (tHist[0] && tHist[0].date === today && (tHist[0].a || tHist[0].b)) {
             const aEl = document.getElementById('t2108-a');
             const bEl = document.getElementById('t2108-b');
             if (aEl) aEl.value = tHist[0].a;
