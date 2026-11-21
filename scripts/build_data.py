@@ -107,7 +107,56 @@ OFFENSE_TICKERS = ["XLK", "SMH", "IGV"]
 DEFENSE_TICKERS = ["XLU", "XLP", "XLV"]
 
 # All tickers to fetch
-ALL_TICKERS = {**INDEXES, **SECTORS, **THEMATIC, **MACRO, **CRYPTO, **LEADERS}
+# S&P 500 Subsector ETFs (Carson Investment Research list)
+SUBSECTORS = {
+    "HACK": ("Cybersecurity", "Technology"),
+    "KBWP": ("Property & Casualty Insurance", "Financials"),
+    "REZ": ("Residential Real Estate", "Real Estate"),
+    "KIE": ("Insurance", "Financials"),
+    "ITB": ("Home Construction", "Consumer Discretionary"),
+    "PBJ": ("Food & Beverage", "Consumer Staples"),
+    "PHO": ("Water", "Industrials"),
+    "IHI": ("Medical Devices", "Health Care"),
+    "REM": ("Mortgage REITs", "Financials"),
+    "XRT": ("Retail", "Consumer Discretionary"),
+    "MLPX": ("Midstream / Energy Infrastructure", "Energy"),
+    "JETS": ("Airlines", "Industrials"),
+    "PKB": ("Building & Construction", "Industrials"),
+    "KRE": ("Regional Banks", "Financials"),
+    "IYT": ("Transportation", "Industrials"),
+    "IBB": ("Biotechnology", "Health Care"),
+    "KBE": ("Banks", "Financials"),
+    "XHS": ("Health Care Services", "Health Care"),
+    "XPH": ("Pharmaceuticals", "Health Care"),
+    "PAVE": ("Infrastructure", "Industrials"),
+    "IYG": ("Financial Services", "Financials"),
+    "FCG": ("Natural Gas E&P", "Energy"),
+    "XSW": ("Software & Services", "Technology"),
+    "XOP": ("Oil & Gas Exploration & Production", "Energy"),
+    "GLD": ("Commodities: Gold", "Commodities"),
+    "IGV": ("Software", "Technology"),
+    "IAI": ("Broker-Dealers & Securities Exchanges", "Financials"),
+    "XTL": ("Telecommunications", "Communication Services"),
+    "IHF": ("Healthcare Providers", "Health Care"),
+    "SLX": ("Steel", "Materials"),
+    "IDGT": ("Digital Infrastructure & Real Estate", "Real Estate"),
+    "SKYY": ("Cloud Computing", "Technology"),
+    "FDN": ("Internet", "Technology"),
+    "XAR": ("Aerospace & Defense", "Industrials"),
+    "OIH": ("Oil Equipment & Services", "Energy"),
+    "XITK": ("Innovative Technology", "Technology"),
+    "XNTK": ("NYSE Technology", "Technology"),
+    "XME": ("Metals & Mining", "Materials"),
+    "IBIT": ("Crypto: Bitcoin", "Crypto"),
+    "GDX": ("Gold Mining", "Materials"),
+    "SLV": ("Commodities: Silver", "Commodities"),
+    "SMH": ("Semiconductors", "Technology"),
+    "GDXJ": ("Junior Gold Mining", "Materials"),
+    "TAN": ("Solar", "Energy"),
+}
+SUBSECTOR_TICKERS = {t: n for t, (n, s) in SUBSECTORS.items()}
+
+ALL_TICKERS = {**INDEXES, **SECTORS, **THEMATIC, **MACRO, **CRYPTO, **LEADERS, **SUBSECTOR_TICKERS}
 
 # Sector colors (borrowed from traderwillhu)
 SECTOR_COLORS = {
@@ -463,6 +512,7 @@ def main():
         "top_gainers": top_gainers,
         "indexes": {t: all_metrics.get(t, {}) for t in INDEXES},
         "sectors": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in SECTORS.items() if t in all_metrics],
+        "subsectors": [{"ticker": t, "name": n, "sector": SUBSECTORS[t][1], **all_metrics.get(t, {})} for t, n in SUBSECTOR_TICKERS.items() if t in all_metrics],
         "thematic": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in THEMATIC.items() if t in all_metrics],
         "macro": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in MACRO.items() if t in all_metrics],
         "leaders": [{"ticker": t, "name": n, **all_metrics.get(t, {})} for t, n in LEADERS.items() if t in all_metrics],
@@ -471,14 +521,23 @@ def main():
     }
 
     # Sort sectors by 5D change
+    snapshot["subsectors"].sort(key=lambda x: x.get("daily") or 0, reverse=True)
     snapshot["sectors"].sort(key=lambda x: x.get("p5d", 0) if x.get("p5d") is not None else -999, reverse=True)
 
-    # Save JSON
-    snapshot_path = os.path.join(out_dir, "snapshot.json")
+    # Save JSON with unique filename to bust CDN cache
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    snapshot_filename = f"snapshot_{ts}.json"
+    snapshot_path = os.path.join(out_dir, snapshot_filename)
     with open(snapshot_path, "w", encoding="utf-8") as f:
         json.dump(snapshot, f, ensure_ascii=False, indent=2, default=str)
 
+    # Also save a reference file so index.html knows which file to load
+    ref_path = os.path.join(out_dir, "snapshot_ref.json")
+    with open(ref_path, "w", encoding="utf-8") as f:
+        json.dump({"filename": snapshot_filename, "built_at": snapshot["built_at"]}, f)
+
     print(f"\nSaved snapshot to: {snapshot_path}")
+    print(f"Reference file: {ref_path}")
     print("\nDone!")
 
 
