@@ -737,18 +737,7 @@
                     </div>
                 </div>
 
-                <div class="section" id="subsectors">
-            <div class="section-header" onclick="toggleSection('subsectors')">S&amp;P 500 Subsector Performance<span class="collapse-btn">&#9660;</span></div>
-            <div class="section-body" style="padding:0;">
-                ${renderDataTable(subsectors, [
-                    {key:'sector', label:'Sector', text:true},
-                    {key:'daily', label:'% Daily'},
-                    {key:'p5d', label:'% 5D'},
-                    {key:'p20d', label:'% 20D'},
-                ], 'subsectors')}
-            </div>
-        </div>
-        <div class="section">
+                <div class="section">
                     <div class="section-header">4. Situational Awareness</div>
                     <div class="section-body">
                         <div style="font-size:10pt;color:#94a3b8;margin-bottom:3px;">Upcoming macro (next 7 days):</div>
@@ -878,6 +867,20 @@ ${(() => {
                     </div>
                 </div>
 
+                <div class="section" id="subsectors">
+                    <div class="section-header" onclick="toggleSection('subsectors')">S&amp;P 500 Subsector Performance<span class="collapse-btn">&#9660;</span></div>
+                    <div class="section-body" style="padding:0;">
+                        ${renderDataTable(subsectors, [
+                            {key: 'sector', label: 'Sector', text: true},
+                            {key: 'daily', label: '% Daily'},
+                            {key: 'p5d', label: '% 5D'},
+                            {key: 'off_high', label: '% Off High'},
+                            {key: 'ytd', label: '% YTD'},
+                        ], 'subsectors')}
+                    </div>
+                </div>
+                
+
             </div>
         </div>
         `;
@@ -892,7 +895,7 @@ ${(() => {
         renderHistoryOnLoad();
     }
 
-    // ─── MARKET CALENDAR HELPERS ─────────────────────────────────────
+    // --- MARKET CALENDAR HELPERS ---
     function todayStr() {
         return new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
     }
@@ -1093,16 +1096,21 @@ ${(() => {
     }
 
     function loadData() {
-        // Prefer the workflow's snapshot_ref.json; fall back to snapshot.json
+        // Step 1: Get reference to latest snapshot filename
         fetch('data/snapshot_ref.json?t=' + Date.now())
             .then(r => r.ok ? r.json() : null)
             .then(ref => {
-                if (ref && ref.filename) {
-                    return fetchSnapshot('data/' + ref.filename);
+                if (!ref || !ref.filename) {
+                    // Fallback to old filename for backward compatibility
+                    return fetchSnapshot('data/snapshot.json');
                 }
-                return fetchSnapshot('data/snapshot.json');
+                // Step 2: Fetch the specific snapshot file (unique filename = no CDN cache)
+                return fetchSnapshot('data/' + ref.filename);
             })
-            .catch(() => fetchSnapshot('data/snapshot.json'));
+            .catch(err => {
+                // Fallback
+                fetchSnapshot('data/snapshot.json');
+            });
     }
 
     function fetchSnapshot(url) {
@@ -1129,7 +1137,7 @@ ${(() => {
     // Restore manually entered values (NH-NL, T2108) from today's history
     function restoreManualInputs() {
         const today = todayStr();
-        // Only restore values saved TODAY — never carry yesterday's data forward
+        // Only restore values saved TODAY - never carry yesterday's data forward
         const bHist = JSON.parse(localStorage.getItem('breadth_history') || '[]');
         if (bHist[0] && bHist[0].date === today && (bHist[0].highs || bHist[0].lows)) {
             const hEl = document.getElementById('new-highs');
