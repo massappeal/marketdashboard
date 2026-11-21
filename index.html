@@ -524,7 +524,7 @@
                         ${sortedRows.map(r => `
                             <tr>
                                 <td>${tvLink(r.ticker, r.ticker + ': ' + r.name)}</td>
-                                ${cols.map(c => `<td>${renderBar(r[c.key], ranges[c.key])}</td>`).join('')}
+                                ${cols.map(c => c.text ? `<td>${r[c.key]}</td>` : `<td>${renderBar(r[c.key], ranges[c.key])}</td>`).join('')}
                                 <td>${trendText(r)}</td>
                             </tr>
                         `).join('')}
@@ -553,7 +553,7 @@
     };
 
     window.applyCollapsedState = function() {
-        const sections = ['indexes', 'sectors', 'thematic', 'crypto', 'macro', 'leaders'];
+        const sections = ['indexes', 'sectors', 'thematic', 'crypto', 'macro', 'leaders', 'breadth', 't2108sec', 'subsectors'];
         sections.forEach(id => {
             const section = document.getElementById(id);
             if (section && localStorage.getItem('collapsed-' + id) === '1') {
@@ -583,6 +583,7 @@
         const thematic = snapshot.thematic || [];
         const macro = snapshot.macro || [];
         const crypto = snapshot.crypto || [];
+            const subsectors = snapshot.subsectors || [];
         
         const leaders = snapshot.leaders || [];
 
@@ -654,8 +655,8 @@
                     </div>
                 </div>
 
-                <div class="section">
-                    <div class="section-header">3. Market Breadth (NH-NL)</div>
+                <div class="section" id="breadth">
+                    <div class="section-header" onclick="toggleSection('breadth')">3. Market Breadth (NH-NL)<span class="collapse-btn">&#9660;</span></div>
                     <div class="section-body">
                         <div class="breadth-stat">
                             <span>Cumulative NH-NL trend</span>
@@ -678,7 +679,7 @@
                             <span id="nh-nl-winner" class="trend-no">--</span>
                         </div>
                         <div style="margin-top:8px;border-top:1px solid #334155;padding-top:6px;">
-                            <div style="font-size:9pt;color:#94a3b8;margin-bottom:3px;"><strong>History (last 10):</strong></div>
+                            <div style="font-size:9pt;color:#94a3b8;margin-bottom:3px;"><strong>History (last 60):</strong></div>
                             <div id="breadth-history"></div>
                         </div>
                     </div>
@@ -700,8 +701,8 @@
                     </div>
                 </div>
 
-                <div class="section">
-                    <div class="section-header">T2108 / % Above 40DSMA</div>
+                <div class="section" id="t2108sec">
+                    <div class="section-header" onclick="toggleSection('t2108sec')">T2108 / % Above 40DSMA<span class="collapse-btn">&#9660;</span></div>
                     <div class="section-body">
                         <div style="font-size:10pt;color:#94a3b8;margin-bottom:4px;">
                             <strong>Proxy ($SPXA50R):</strong>
@@ -729,23 +730,33 @@
                                 &lt;20% = Oversold · 20-70% = Neutral · &gt;70% = Overbought
                             </div>
                             <div style="margin-top:8px;border-top:1px solid #334155;padding-top:6px;">
-                                <div style="font-size:9pt;color:#94a3b8;margin-bottom:3px;"><strong>History (last 10):</strong></div>
+                                <div style="font-size:9pt;color:#94a3b8;margin-bottom:3px;"><strong>History (last 60):</strong></div>
                                 <div id="t2108-history"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="section">
+                <div class="section" id="subsectors">
+            <div class="section-header" onclick="toggleSection('subsectors')">S&amp;P 500 Subsector Performance<span class="collapse-btn">&#9660;</span></div>
+            <div class="section-body" style="padding:0;">
+                ${renderDataTable(subsectors, [
+                    {key:'sector', label:'Sector', text:true},
+                    {key:'daily', label:'% Daily'},
+                    {key:'p5d', label:'% 5D'},
+                    {key:'p20d', label:'% 20D'},
+                ], 'subsectors')}
+            </div>
+        </div>
+        <div class="section">
                     <div class="section-header">4. Situational Awareness</div>
                     <div class="section-body">
                         <div style="font-size:10pt;color:#94a3b8;margin-bottom:3px;">Upcoming macro (next 7 days):</div>
                         <div style="font-size:10pt;color:#e2e8f0;line-height:1.5;" id="econ-calendar">
-                            <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#f59e0b;">Mon Nov 16</span> · No major events</div>
-                            <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#f59e0b;">Tue Nov 17</span> · ADP Employment Change (5:15a PT), Retail Sales (5:30a PT), NVDA ER (AMC)</div>
-                            <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#f59e0b;">Wed Nov 18</span> · Housing Starts (5:30a)</div>
-                            <div style="padding:2px 0;"><span style="color:#f59e0b;">Thu Nov 19</span> · Jobless Claims (5:30a), ANT IPO</div>
-			 <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#f59e0b;">Fri Nov 20</span> · Michigan Consumer Sentiment (7:00a)</div>
+                            <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#f59e0b;">Mon Oct 13</span> · No major events</div>
+                            <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#f59e0b;">Tue Oct 14</span> · PPI, NFIB</div>
+                            <div style="padding:2px 0;border-bottom:1px solid #334155;"><span style="color:#f59e0b;">Wed Oct 15</span> · CPI, FOMC Minutes</div>
+                            <div style="padding:2px 0;"><span style="color:#f59e0b;">Thu Oct 16</span> · Jobless Claims, Retail Sales</div>
                         </div>
                     </div>
                 </div>
@@ -995,7 +1006,7 @@ ${(() => {
             b: b,
             t2108: t2108
         });
-        history = history.slice(0, 20);
+        history = history.slice(0, 60);
         localStorage.setItem(key, JSON.stringify(history));
     }
 
@@ -1014,7 +1025,7 @@ ${(() => {
             lows: lows,
             net: net
         });
-        history = history.slice(0, 20);
+        history = history.slice(0, 60);
         localStorage.setItem(key, JSON.stringify(history));
     }
 
@@ -1031,7 +1042,7 @@ ${(() => {
                     </tr>
                 </thead>
                 <tbody>
-                    ${history.slice(0, 10).map(h => `
+                    ${history.slice(0, 60).map(h => `
                         <tr style="border-bottom:1px solid #1e293b;">
                             <td style="padding:2px 4px;color:#94a3b8;">${h.date} ${h.time}</td>
                             ${columns.map(c => `<td style="text-align:right;padding:2px 4px;${c.colorFn ? c.colorFn(h[c.key]) : ''}">${h[c.key]}</td>`).join('')}
@@ -1082,21 +1093,16 @@ ${(() => {
     }
 
     function loadData() {
-        // Step 1: Get reference to latest snapshot filename
+        // Prefer the workflow's snapshot_ref.json; fall back to snapshot.json
         fetch('data/snapshot_ref.json?t=' + Date.now())
             .then(r => r.ok ? r.json() : null)
             .then(ref => {
-                if (!ref || !ref.filename) {
-                    // Fallback to old filename for backward compatibility
-                    return fetchSnapshot('data/snapshot.json');
+                if (ref && ref.filename) {
+                    return fetchSnapshot('data/' + ref.filename);
                 }
-                // Step 2: Fetch the specific snapshot file (unique filename = no CDN cache)
-                return fetchSnapshot('data/' + ref.filename);
+                return fetchSnapshot('data/snapshot.json');
             })
-            .catch(err => {
-                // Fallback
-                fetchSnapshot('data/snapshot.json');
-            });
+            .catch(() => fetchSnapshot('data/snapshot.json'));
     }
 
     function fetchSnapshot(url) {
